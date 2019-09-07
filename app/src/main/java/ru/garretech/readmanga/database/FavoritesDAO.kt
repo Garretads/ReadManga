@@ -21,8 +21,11 @@ interface FavoritesDAO {
     fun getFavoriteByIndex(ids: Long): Favorites
 
     @Query("SELECT * FROM favorites WHERE manga_url = :URL")
-    fun getFavoriteByURL(URL: String): Favorites
+    fun getFavoriteByURL(URL: String): Favorites?
 
     @Delete
     fun deleteFavorites(favorites: Favorites)
+
+    @Query("DELETE FROM favorites")
+    fun clearFavorites()
 }

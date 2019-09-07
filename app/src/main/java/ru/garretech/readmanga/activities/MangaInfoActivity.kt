@@ -9,13 +9,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.ViewModelProviders
+import io.reactivex.Single
 
-import io.reactivex.Completable
-import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
@@ -25,7 +22,7 @@ import ru.garretech.readmanga.R
 import ru.garretech.readmanga.adapters.MovieAboutPagerAdapter
 import ru.garretech.readmanga.database.AppDataSource
 import ru.garretech.readmanga.fragments.MangaAboutFragment
-import ru.garretech.readmanga.fragments.MangaSourcesFragment
+import ru.garretech.readmanga.fragments.MangaEpisodesFragment
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.tools.SiteWorker
 import ru.garretech.readmanga.viewmodels.MangaInfoActivityViewModel
@@ -58,23 +55,32 @@ class MangaInfoActivity : AppCompatActivity() {
         showProgressCircle()
 
         isRandom = intent.getBooleanExtra("is_random",true)
-        var url : String
 
-        if (isRandom) {
-            url = SiteWorker.RANDOM_MOVIE_PREFIX
-        }
-        else {
-            url = intent.getStringExtra("manga_url")
+        var url : String = if (isRandom) {
+            SiteWorker.RANDOM_MOVIE_PREFIX
+        } else {
+            intent.getStringExtra("manga_url")!!
         }
 
         DisposableManager.add(viewModel
             .getMangaFromDatabase(url)
+            .flatMap {
+                if (it.description == null)
+                    viewModel.getMangaInfo(url)
+                else
+                    Single.just(it)
+            }
             .subscribe( { manga ->
                 prepareManga(manga)
             },{
-                viewModel.getMangaRequestSingle(url)
+                viewModel.getMangaInfo(url)
                     .subscribe( { manga ->
-                    prepareManga(manga)
+                        viewModel.addManga(manga).subscribe({
+                            prepareManga(manga)
+                        },{
+                            Log.e("MangaInfoActivity","Ошибка сохранения манги в БД", it)
+                            dismissProgressCircle()
+                        })
                 },{
                     Log.e("MANGA INFO OBSERVER","Ошибка получения информации о манге", it)
                 })
@@ -88,12 +94,11 @@ class MangaInfoActivity : AppCompatActivity() {
         mFragmentAdapter = MovieAboutPagerAdapter(supportFragmentManager)
 
         mFragmentAdapter.addFragment(MangaAboutFragment.newInstance(viewModel.currentManga!!), "О манге")
-        mFragmentAdapter.addFragment(MangaSourcesFragment.newInstance(viewModel.currentManga!!), "Эпизоды")
+        mFragmentAdapter.addFragment(MangaEpisodesFragment.newInstance(viewModel.currentManga!!), "Эпизоды")
         viewPager.adapter = mFragmentAdapter
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.title = title
-
+        title = ""
     }
 
     private fun flagFavorite(flag: Boolean) {
@@ -120,7 +125,7 @@ class MangaInfoActivity : AppCompatActivity() {
 
     fun prepareManga(manga: Manga) {
         viewModel.addManga(manga).subscribe( {
-            title = manga.title
+            title = ""
 
             setupViewPager(viewPager)
             tabLayout.setupWithViewPager(viewPager)
@@ -142,11 +147,7 @@ class MangaInfoActivity : AppCompatActivity() {
 
         disposable = observable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : Consumer<Boolean> {
-                    override fun accept(t: Boolean) {
-                        flagFavorite(t)
-                    }
-                })
+                .subscribe { t -> flagFavorite(t) }
 
         viewModel.isInFavorite.subscribe(
             { isInFavorite ->

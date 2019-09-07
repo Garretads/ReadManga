@@ -42,15 +42,13 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.json.JSONArray
+import ru.garretech.readmanga.BuildConfig
 import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.Settings
 import ru.garretech.readmanga.adapters.RecyclerAdapter
 import ru.garretech.readmanga.database.AppDataSource
-import ru.garretech.readmanga.fragments.CustomLoadMoreView
-import ru.garretech.readmanga.fragments.DisclaimerFragment
-import ru.garretech.readmanga.fragments.ProgressBottomSheet
-import ru.garretech.readmanga.fragments.SortingFragment
+import ru.garretech.readmanga.fragments.*
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.tools.SiteWorker
 import ru.garretech.readmanga.viewmodels.MainActivityViewModel
@@ -59,12 +57,13 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
     private lateinit var searchView: SearchView
     private var mangaAdapter: RecyclerAdapter? = null
-    private var mSiteWorker: SiteWorker = SiteWorker()
-    private var requestQuery: SiteWorker.RequestQuery? = null
-    private lateinit var appDataSource: AppDataSource
     private lateinit var mAdViewContainer: RelativeLayout
     private lateinit var menu: Menu
+
     private val sortingMenuItem by lazy { menu.findItem(R.id.action_sort) }
+    private val clearMenuItem by lazy { menu.findItem(R.id.action_clear) }
+    private val searchMenuItem by lazy { menu.findItem(R.id.action_search) }
+
     private var bag : CompositeDisposable = CompositeDisposable()
     private lateinit var viewModel: MainActivityViewModel
 
@@ -106,15 +105,15 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
 
     private val onLoadMoreConsumer by lazy {
-        Consumer<List<Manga>> { movies ->
-            mangaAdapter!!.addData(movies)
+        Consumer<List<Manga>> { mangas ->
+            mangaAdapter!!.addData(mangas)
             mangaAdapter!!.loadMoreComplete()
         }
     }
 
     private val updateListConsumer by lazy {
-        Consumer<List<Manga>> { movies ->
-            updateDataList(movies)
+        Consumer<List<Manga>> { mangas ->
+            updateDataList(mangas, true)
 
             if (swipeContainer.isRefreshing) swipeContainer.isRefreshing = false
 
@@ -126,11 +125,8 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
 
-        viewModel.progressBottomSheet = ProgressBottomSheet()
-        appDataSource = AppDataSource(applicationContext)
         mAdViewContainer = relativeContainer
 
         navigationView.setNavigationItemSelectedListener(this)
@@ -161,16 +157,6 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
         firstStartDisclaimer()
 
-        if (hasConnection()) {
-            activityState = ACTIVITY_STATE.ONLINE
-
-
-
-            getRequestQueryCompletable(SiteWorker.EDITOR_CHOICE_QUERY)
-                .subscribeOn(Schedulers.io())
-                .subscribe(getMangaListObserver)
-        } else showConnectionError()
-
         //refreshBannerAd()
     }
 
@@ -192,7 +178,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
         val myActionMenuItem = menu.findItem(R.id.action_search)
         searchView = myActionMenuItem.actionView as SearchView
 
-        dismissSortingMenu()
+        performInitialRequest()
 
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
@@ -201,25 +187,27 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
             override fun onQueryTextSubmit(queryString: String): Boolean {
 
                 if (hasConnection()) {
-                    activityState = ACTIVITY_STATE.ONLINE
 
+                    changeState(ACTIVITY_STATE.MOVIE_LIST)
                     showProgressBar()
 
                     val params = HashMap<String, String>()
                     params["q"] = queryString
 
-                    getRequestQueryCompletable(SiteWorker.SEARCH_QUERY, SiteWorker.SEARCH_PREFIX, params)
-                        .subscribeOn(Schedulers.io())
+                    viewModel.getRequestQueryCompletable(SiteWorker.SEARCH_QUERY, SiteWorker.SEARCH_PREFIX, params)
                         .subscribe(getMangaListObserver)
 
                     title = getString(R.string.search_hint) + ": $queryString"
+                    viewModel.title = title.toString()
 
-                    if (!searchView.isIconified) {
-                        searchView.isIconified = true
-                    }
-                } else showConnectionError()
+                    //if (!searchView.isIconified) {
+                    searchView.isIconified = true
+                    // }
+                } else
+                    showConnectionError()
 
-                myActionMenuItem.collapseActionView()
+                searchMenuItem.collapseActionView()
+
                 return false
             }
 
@@ -235,28 +223,75 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
                 startActivity(intent)
             }
             R.id.action_sort -> {
-                if (requestQuery!!.requestUri() != null) {
+                if (viewModel.requestQuery!!.requestUri() != null) {
 
                     showProgressBar()
 
-                    bag.add(Single.create<JSONArray> { observer ->
-                        val jsonArray  = SiteWorker.getSortingParams(requestQuery?.requestUri()?.build()!!)
-
+                    DisposableManager.add(Single.create<JSONArray> { observer ->
+                        val jsonArray  = SiteWorker.getSortingParams(viewModel.requestQuery?.requestUri()?.build()!!)
                         observer.onSuccess(jsonArray)
                     }.observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe( { jsonArray ->
-
-                            if (jsonArray.length() != 0) {
-                                val sortingFragment = SortingFragment.newInstance(jsonArray,requestQuery?.requestUri()?.toString()!!)
-                                sortingFragment.show(supportFragmentManager, "sortingFragment")
-                            }
-                            else
-                                Toast.makeText(applicationContext,"Не удалось загрузить список сортиовок, попробуйте еще раз",Toast.LENGTH_SHORT).show()
+                            val sortingFragment = SortingFragment.newInstance(jsonArray,viewModel.requestQuery?.requestUri()?.toString()!!)
+                            sortingFragment.show(supportFragmentManager, "sortingFragment")
 
                             dismissProgressBar()
-                        }, { Log.e("SORTING OBSERVER","Не удалось загрузить список сотрировок",it) }))
+
+                        }, { Log.d("SORTING FRAGMENT","CAN'T GET SORTING WINDOW") }))
                 }
+            }
+            R.id.action_clear -> {
+
+                var confirmationDialog : ConfirmationFragment? = null
+
+                when (activityState) {
+                    ACTIVITY_STATE.FAVORITES -> {
+
+                        confirmationDialog = ConfirmationFragment.newInstance(
+                            "Предупреждение",
+                            "Вы действительно хотите удалить содержимое избранного?"
+                        )
+                        //confirmationDialog.setStyle(DialogFragment.STYLE_NORMAL,R.style.CustomDialog)
+
+                        confirmationDialog.setConfirmationListener(object :
+                            ConfirmationFragment.OnFragmentInteractionListener {
+                            override fun onAcceptPressed() {
+                                showProgressBar()
+
+                                DisposableManager.add(viewModel.clearFavorites().subscribe {
+                                    viewModel.historyObservable.subscribe(getMangaListObserver)
+                                })
+                            }
+
+                            override fun onCancelPressed() {}
+                        })
+
+                    }
+                    ACTIVITY_STATE.HISTORY -> {
+
+                        confirmationDialog = ConfirmationFragment.newInstance(
+                            "Предупреждение",
+                            "Вы действительно хотите удалить содержимое истории?"
+                        )
+                        //confirmationDialog.setStyle(DialogFragment.STYLE_NORMAL,R.style.CustomDialog)
+
+                        confirmationDialog.setConfirmationListener(object :
+                            ConfirmationFragment.OnFragmentInteractionListener {
+                            override fun onAcceptPressed() {
+                                showProgressBar()
+
+                                DisposableManager.add(viewModel.clearHistory().subscribe {
+                                    viewModel.historyObservable.subscribe(getMangaListObserver)
+                                })
+                            }
+
+                            override fun onCancelPressed() {}
+                        })
+                    }
+                }
+
+                confirmationDialog?.show(supportFragmentManager, "confirmationDialog")
             }
         }
         return true
@@ -281,32 +316,30 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
         when (item.itemId) {
             R.id.nav_editorchoice -> {
                 if (hasConnection()) {
-                    activityState = ACTIVITY_STATE.ONLINE
+                    changeState(ACTIVITY_STATE.EDITOR_CHOICE)
 
                     showProgressBar()
-                    dismissSortingMenu()
 
-                    getRequestQueryCompletable(SiteWorker.EDITOR_CHOICE_QUERY)
-                        .subscribeOn(Schedulers.io())
+                    viewModel.getRequestQueryCompletable(SiteWorker.EDITOR_CHOICE_QUERY)
                         .subscribe(getMangaListObserver)
 
                     title = getString(R.string.editor_choice_title)
+                    viewModel.title = title.toString()
 
                 } else showConnectionError()
             }
             R.id.nav_list -> {
 
                 if (hasConnection()) {
-                    activityState = ACTIVITY_STATE.ONLINE
+                    changeState(ACTIVITY_STATE.MOVIE_LIST)
 
                     showProgressBar()
-                    showSortingMenu()
 
-                    getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, SiteWorker.LIST_PREFIX)
-                        .subscribeOn(Schedulers.io())
+                    viewModel.getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, SiteWorker.LIST_PREFIX)
                         .subscribe(getMangaListObserver)
 
                     title = getString(R.string.list_manga_title)
+                    viewModel.title = title.toString()
 
                 } else showConnectionError()
             }
@@ -328,43 +361,37 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
                 if (hasConnection()) {
 
-                    activityState = ACTIVITY_STATE.ONLINE
-                    try {
-                        val jsonArray = SiteWorker.genresList
+                    changeState(ACTIVITY_STATE.MOVIE_LIST)
 
-                        if (jsonArray.length() != 0) {
-                            val intent = Intent(this@MainActivity, GenresActivity::class.java)
-                            intent.putExtra("genres", jsonArray.toString())
-                            startActivityForResult(intent, GENRES_CODE)
-                        } else
-                            Toast.makeText(this,"Ошибка при получении списка жанров, повторите попытку еще раз", Toast.LENGTH_SHORT).show()
+                    showProgressBar()
 
-                    } catch (e: InterruptedException) {
-                        e.printStackTrace()
-                    } catch (e: ExecutionException) {
-                        showConnectionError()
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                    } catch (e: NullPointerException) {
-                        showConnectionError()
-                    }
+                    viewModel.getGenresList().subscribe({
+                        val intent = Intent(this@MainActivity, GenresActivity::class.java)
+                        intent.putExtra("genres", it.toString())
+                        startActivityForResult(intent, GENRES_CODE)
+                        dismissProgressBar()
+                    },{
+                        Log.e("MainActivity","Ошибка при получении списка жанров",it)
+                        Toast.makeText(this,"Ошибка при получении списка жанров, попробуйте еще раз",Toast.LENGTH_SHORT)
+
+                    })
                 } else showConnectionError()
             }
             R.id.nav_favourites -> {
+                changeState(ACTIVITY_STATE.FAVORITES)
 
-                //List<Movie> favoritesMovies = appDataSource.getListOfFavorites();
-                activityState = ACTIVITY_STATE.FAVORITES
-                Completable.fromCallable {
-                    viewModel.observable = appDataSource.listOfFavorites
-                    null
-                }.subscribeOn(Schedulers.io())
-                        .subscribe(getMangaListObserver)
+                viewModel.favoritesObservable.subscribe(getMangaListObserver)
 
                 title = getString(R.string.action_favorite)
             }
 
             R.id.nav_history -> {
-                Toast.makeText(applicationContext, "Функция в разработке", Toast.LENGTH_LONG).show()
+                changeState(ACTIVITY_STATE.HISTORY)
+
+                viewModel.historyObservable.subscribe(getMangaListObserver)
+
+                title = getString(R.string.action_history)
+                viewModel.title = title.toString()
             }
 
             R.id.nav_about -> {
@@ -395,24 +422,14 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
                 showProgressBar()
 
-                showSortingMenu()
-                mangaAdapter?.clear()
+                changeState(ACTIVITY_STATE.MOVIE_LIST)
 
-                getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, resultPrefix)
-                    .subscribeOn(Schedulers.io())
+                viewModel.getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, resultPrefix)
                     .subscribe(getMangaListObserver)
 
                 title = genreName.substring(0, 1).toUpperCase() + genreName.substring(1)
             }
         }
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if ((keyCode == KeyEvent.KEYCODE_BACK))
-        {
-            bag.dispose()
-        }
-        return super.onKeyDown(keyCode, event)
     }
 
 
@@ -446,16 +463,17 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
     override fun onFragmentInteraction(result: Map<String,Any>) {
 
         if (hasConnection()) {
-            activityState = ACTIVITY_STATE.ONLINE
+
+            changeState(ACTIVITY_STATE.MOVIE_LIST)
 
             showProgressBar()
 
             val params = result.get("params") as HashMap<String,String>
-            val completable : Completable
-            if (params.size == 0)
-                completable = getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, result["path"] as String)
+
+            val completable = if (params.size == 0)
+                viewModel.getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, result["path"] as String)
             else
-                completable = getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, result["path"] as String, params)
+                viewModel.getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, result["path"] as String, params)
 
             completable.subscribeOn(Schedulers.io())
                 .subscribe(getMangaListObserver)
@@ -478,28 +496,16 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
 
     override fun onLoadMoreRequested() {
-        if (activityState == ACTIVITY_STATE.ONLINE) {
-             if (requestQuery != null) {
+        if (activityState == ACTIVITY_STATE.EDITOR_CHOICE || activityState == ACTIVITY_STATE.MOVIE_LIST) {
+             if (viewModel.requestQuery != null) {
 
-                 if (requestQuery!!.offset() >= requestQuery!!.queryAmount()) {
+                 if (viewModel.requestQuery!!.offset() >= viewModel.requestQuery!!.queryAmount()) {
                      mangaAdapter!!.loadMoreComplete()
                      mangaAdapter!!.setEnableLoadMore(false)
                  } else {
                      if (hasConnection()) {
 
-                         Completable.fromCallable {
-                             try {
-                                 viewModel.observable = requestQuery!!.nextQuery
-                             } catch (e: InterruptedException) {
-                                 e.printStackTrace()
-                             } catch (e: ExecutionException) {
-                                 showConnectionError()
-                             } catch (e: NullPointerException) {
-                                 showConnectionError()
-                             }
-                             null
-                         }.subscribeOn(Schedulers.io())
-                         .subscribe(getOnLoadMoreObserver)
+                         viewModel.nextQueryObservable.subscribe(getOnLoadMoreObserver)
 
                      } else {
                          //Get more data failed
@@ -525,42 +531,24 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
         when(activityState) {
 
-            ACTIVITY_STATE.ONLINE,ACTIVITY_STATE.LOST_CONNECTION -> {
+            ACTIVITY_STATE.EDITOR_CHOICE, ACTIVITY_STATE.MOVIE_LIST, ACTIVITY_STATE.LOST_CONNECTION -> {
                 if (hasConnection()) {
-
-                    Completable.fromCallable {
-                        try {
-                            if (requestQuery != null)
-                                requestQuery!!.resetOffset()
-                            else
-                                requestQuery = mSiteWorker.RequestQuery(applicationContext, SiteWorker.EDITOR_CHOICE_QUERY)
-
-                            viewModel.observable = requestQuery!!.nextQuery
-                        } catch (e: InterruptedException) {
-                            e.printStackTrace()
-                        } catch (e: ExecutionException) {
-                            showConnectionError()
-                        } catch (e: NullPointerException) {
-                            showConnectionError()
-                        }
-
-                        null
-                    }.subscribeOn(Schedulers.io())
-                    .subscribe(getMangaListObserver)
+                    viewModel.onRefreshObservableNetwork.subscribe(getMangaListObserver)
                 } else showConnectionError()
             }
             ACTIVITY_STATE.FAVORITES -> {
-                activityState = ACTIVITY_STATE.FAVORITES
-                Completable.fromCallable {
-                    viewModel.observable = appDataSource.listOfFavorites
-                    null
-                }.subscribeOn(Schedulers.io())
-                .subscribe(getMangaListObserver)
+                viewModel.favoritesObservable.subscribe(getMangaListObserver)
+            }
+            ACTIVITY_STATE.HISTORY -> {
+                viewModel.historyObservable.subscribe(getMangaListObserver)
             }
         }
     }
 
-    private fun updateDataList(list: List<Manga>) {
+    private fun updateDataList(list: List<Manga>, clear : Boolean) {
+
+        if(clear)
+            mangaAdapter?.clear()
 
         mangaAdapter!!.addAll(list)
         movieListRecyclerView!!.recycledViewPool.clear()
@@ -568,8 +556,8 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
         if (mangaAdapter!!.data.size != 0)
             movieListRecyclerView!!.scrollToPosition(0)
 
-        if (activityState == ACTIVITY_STATE.ONLINE) {
-            if (requestQuery != null && requestQuery!!.offset() < requestQuery!!.queryAmount())
+        if (activityState == ACTIVITY_STATE.EDITOR_CHOICE || activityState == ACTIVITY_STATE.MOVIE_LIST) {
+            if (viewModel.requestQuery != null && viewModel.requestQuery!!.offset() < viewModel.requestQuery!!.queryAmount())
                 mangaAdapter!!.setEnableLoadMore(true)
         }
     }
@@ -585,6 +573,55 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
         return ni != null && ni.isConnected
     }
 
+    fun performInitialRequest() {
+        if (hasConnection()) {
+            changeState(ACTIVITY_STATE.EDITOR_CHOICE)
+
+
+            if (viewModel.requestQuery != null) {
+                viewModel.observable?.subscribe(updateListConsumer)
+            } else {
+                showProgressBar()
+
+                viewModel.getRequestQueryCompletable(SiteWorker.EDITOR_CHOICE_QUERY)
+                    .subscribe(getMangaListObserver)
+            }
+        } else
+            showConnectionError()
+    }
+
+    private fun changeState(newState : ACTIVITY_STATE) {
+        when (newState) {
+            ACTIVITY_STATE.EDITOR_CHOICE -> {
+                activityState =  ACTIVITY_STATE.EDITOR_CHOICE
+                sortingMenuItem.isVisible = false
+                clearMenuItem.isVisible = false
+            }
+            ACTIVITY_STATE.MOVIE_LIST -> {
+                activityState =  ACTIVITY_STATE.MOVIE_LIST
+                sortingMenuItem.isVisible = true
+                clearMenuItem.isVisible = false
+
+            }
+            ACTIVITY_STATE.LOST_CONNECTION -> {
+                activityState =  ACTIVITY_STATE.LOST_CONNECTION
+
+            }
+            ACTIVITY_STATE.HISTORY -> {
+                activityState =  ACTIVITY_STATE.HISTORY
+                sortingMenuItem.isVisible = false
+                clearMenuItem.isVisible = true
+
+            }
+            ACTIVITY_STATE.FAVORITES -> {
+                activityState =  ACTIVITY_STATE.FAVORITES
+                sortingMenuItem.isVisible = false
+                clearMenuItem.isVisible = true
+
+            }
+        }
+    }
+
     private fun showSortingMenu() {
         if (!sortingMenuItem.isVisible)
             sortingMenuItem.isVisible = true
@@ -598,50 +635,39 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
         val mSettings = getSharedPreferences(Settings.APP_PREFERENCES, Context.MODE_PRIVATE)
         val APP_FIRST_RUN = "first_run_check"
         var isFirstRun = mSettings.getBoolean(APP_FIRST_RUN,true)
+        val currentVersion = BuildConfig.VERSION_CODE
+        val savedVersion = mSettings.getInt(Settings.VERSION_CODE,0)
 
         if (isFirstRun) {
             val editor = mSettings.edit()
             editor.putBoolean(APP_FIRST_RUN, false)
             editor.apply()
 
-            val disclaimerFragment = DisclaimerFragment()
+            val disclaimerFragment = DisclaimerFragment.newInstance(getString(R.string.disclaimer_text))
             disclaimerFragment.show(supportFragmentManager, "disclaimer")
         }
+
+        if (currentVersion != savedVersion) {
+            val editor = mSettings.edit()
+            editor.putInt(Settings.VERSION_CODE, currentVersion)
+            editor.apply()
+
+            val disclaimerFragment = DisclaimerFragment.newInstance(getString(R.string.changelog))
+            disclaimerFragment.show(supportFragmentManager, "changelog")
+        }
+
+
     }
-
-
-    @Throws(InterruptedException::class, ExecutionException::class, NullPointerException::class)
-    fun getRequestQueryCompletable(requestType : Int, path : String, params : HashMap<String,String>) : Completable {
-        return Completable.fromCallable {
-            requestQuery = mSiteWorker.RequestQuery(applicationContext, requestType, path, params)
-            viewModel.observable = requestQuery!!.nextQuery
-            null
-        }
-    }
-
-    @Throws(InterruptedException::class, ExecutionException::class, NullPointerException::class)
-    fun getRequestQueryCompletable(requestType : Int, path : String) =
-        Completable.fromCallable {
-            requestQuery = mSiteWorker.RequestQuery(applicationContext, requestType, path)
-            viewModel.observable = requestQuery!!.nextQuery
-            null
-        }
-
-    @Throws(InterruptedException::class, ExecutionException::class, NullPointerException::class)
-    fun getRequestQueryCompletable(requestType : Int) =
-        Completable.fromCallable {
-            requestQuery = mSiteWorker.RequestQuery(applicationContext, requestType)
-            viewModel.observable = requestQuery!!.nextQuery
-            null
-        }
 
     companion object {
 
         val GENRES_CODE = 15
 
         internal enum class ACTIVITY_STATE {
-            ONLINE,
+            EDITOR_CHOICE,
+            MOVIE_LIST,
             FAVORITES,
+            HISTORY,
             LOST_CONNECTION
         }
 

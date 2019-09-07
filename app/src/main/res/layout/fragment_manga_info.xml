@@ -21,7 +21,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                    android:id="@+id/movie_image_about"
+                    android:id="@+id/manga_image_about"
                     android:layout_width="150dp"
                     android:layout_height="210dp"
                     android:layout_marginStart="@dimen/activity_horizontal_margin"
@@ -40,31 +40,31 @@
                 android:paddingEnd="5dp">
 
                 <TextView
-                    android:id="@+id/movie_genres_text"
+                    android:id="@+id/manga_genres_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/movie_production_country_text"
+                    android:id="@+id/manga_production_country_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/movie_series_number_text"
+                    android:id="@+id/manga_chapters_number_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/movie_duration_text"
+                    android:id="@+id/manga_duration_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/movie_age_text"
+                    android:id="@+id/manga_age_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp" />
@@ -73,7 +73,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/movie_description_text"
+            android:id="@+id/manga_description_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"

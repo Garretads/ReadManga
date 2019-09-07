@@ -2,12 +2,14 @@ package ru.garretech.readmanga.database
 
 import android.content.Context
 import android.util.Log
+import io.reactivex.Completable
 
 import java.util.ArrayList
 
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.garretech.readmanga.models.Favorites
+import ru.garretech.readmanga.models.History
 import ru.garretech.readmanga.models.Manga
 
 class AppDataSource(context: Context) {
@@ -17,6 +19,10 @@ class AppDataSource(context: Context) {
     }
     private val favoritesDAO: FavoritesDAO by lazy {
         appDatabase.favoritesDAO()
+    }
+
+    private val historyDAO: HistoryDAO by lazy {
+        appDatabase.historyDAO()
     }
 
     val allMovies: List<Manga>
@@ -29,10 +35,23 @@ class AppDataSource(context: Context) {
             val favorites = favoritesDAO.allFavorites
 
             for (favorite in favorites) {
-                val movie = mangaDAO.getMovie(favorite.mangaURL)
-                list.add(movie)
+                val movie = mangaDAO.getManga(favorite.mangaURL)
+                list.add(movie!!)
             }
             return Observable.fromArray(list)
+        }
+
+    val listOfHistoryObservable : Observable<List<Manga>>
+        get() {
+            val historyList = historyDAO.allHistory
+            val movieList = ArrayList<Manga>()
+
+            for (history in historyList) {
+                val movie = mangaDAO.getManga(history.mangaURL)
+                if (movie != null)
+                    movieList.add(movie)
+            }
+            return Observable.fromArray(movieList)
         }
 
     init {
@@ -43,9 +62,9 @@ class AppDataSource(context: Context) {
         mangaDAO.addMovie(manga)
     }
 
-    fun getMovie(URL: String) =
+    fun getManga(URL: String) =
         Single.create<Manga> {
-            val manga = mangaDAO.getMovie(URL)
+            val manga = mangaDAO.getManga(URL)
 
             if (manga != null)
                 it.onSuccess(manga)
@@ -55,7 +74,7 @@ class AppDataSource(context: Context) {
 
     fun isInDatabase(url : String) =
             Single.create<Boolean> {
-                val manga = mangaDAO.getMovie(url)
+                val manga = mangaDAO.getManga(url)
 
                 if (manga != null)
                     it.onSuccess(true)
@@ -79,7 +98,50 @@ class AppDataSource(context: Context) {
 
     fun deleteFavorites(manga: Manga) {
         val favorites = favoritesDAO.getFavoriteByURL(manga.url)
-        favoritesDAO.deleteFavorites(favorites)
+        if (favorites != null)
+            favoritesDAO.deleteFavorites(favorites)
     }
+
+    fun getHistory(manga: Manga) =
+        Single.create<History> {
+            val history = historyDAO.getHistoryByURL(manga.url)
+
+            if (history == null)
+                it.onSuccess(History((manga.url)))
+            else
+                it.onSuccess(history)
+
+        }
+
+    fun saveHistory(history: History) =
+        Completable.fromCallable {
+            historyDAO.saveHistory(history)
+        }
+
+    fun saveHistory(manga: Manga)  {
+        var history = historyDAO.getHistoryByURL(manga.url)
+
+        if (history == null) {
+            history = History(manga.url).also { it.chapters = HashMap() }
+            historyDAO.saveHistory(history)
+        }
+
+    }
+
+    fun updateHistory(history: History) =
+        Completable.fromCallable {
+            historyDAO.updateHistory(history)
+        }
+
+
+    fun clearHistory() =
+        Completable.fromCallable {
+            historyDAO.clearHistory()
+        }
+
+    fun clearFavorites() =
+        Completable.fromCallable {
+            favoritesDAO.clearFavorites()
+        }
 
 }

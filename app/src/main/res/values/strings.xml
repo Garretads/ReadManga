@@ -11,6 +11,8 @@
     <string name="tab_text_2">Источники</string>
     <string name="action_settings">Настройки</string>
     <string name="action_sort">Сортировка</string>
+    <string name="action_clear">Очистить</string>
+    <string name="action_history">История</string>
     <string name="search_hint">Поиск</string>
     <string name="age_description">Год:</string>
     <string name="genres_description">Жанры:</string>
@@ -113,4 +115,8 @@
         содержимое, отображаемое приложением, нарушает ваши авторские права, немедленно сообщите об этом администрации
         сайта readmanga.me.
     </string>
+
+    <string name="changelog">В этой версии добавлена история просмотра. Функция все еще находится в разработке, поэтому буду рад за детальные отзывы и пожелания.</string>
+
+
 </resources>

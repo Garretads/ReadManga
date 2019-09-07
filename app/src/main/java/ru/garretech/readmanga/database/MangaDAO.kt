@@ -18,6 +18,6 @@ interface MangaDAO {
     fun addMovie(movie: Manga): Long
 
     @Query("SELECT * FROM Manga WHERE URL = :URL")
-    fun getMovie(URL: String): Manga
+    fun getManga(URL: String): Manga?
 
 }

@@ -8,13 +8,15 @@ import java.io.Serializable
 @Entity
 class Manga
 
-    (var title: String?, @field:TypeConverters(ListConverter::class)
-var genres: List<String>?, @field:ColumnInfo(name = "manga_image_url")
+    (var title: String?, @field:ColumnInfo(name = "manga_image_url")
      var mangaImageURL: String, @field:PrimaryKey
      var url: String) : Serializable {
 
     @ColumnInfo(name = "production_year")
     var productionYear: String? = null
+
+    @field:TypeConverters(ListConverter::class)
+    var genres: List<String>? = null
     //private List<String> mainActors;
     //private List<String> actors;
     //private List<String> producers;

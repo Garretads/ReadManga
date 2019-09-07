@@ -3,11 +3,9 @@ package ru.garretech.readmanga.viewmodels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import io.reactivex.Completable
-import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.json.JSONObject
 import ru.garretech.readmanga.database.AppDataSource
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.tools.SiteWorker
@@ -19,13 +17,13 @@ class MangaInfoActivityViewModel(application: Application) : AndroidViewModel(ap
     var isFavorite : Boolean = false
 
 
-    fun getMangaRequestSingle(url: String) = SiteWorker.getMangaInfo(url)
+    fun getMangaInfo(url: String) = SiteWorker.getMangaInfo(url)
         .map {
             currentManga = it
             it
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
-    fun getMangaFromDatabase(url : String) = dataSource.getMovie(url)
+    fun getMangaFromDatabase(url : String) = dataSource.getManga(url)
         .map {
             currentManga = it
             it
