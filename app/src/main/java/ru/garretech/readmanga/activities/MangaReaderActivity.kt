@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,6 +20,7 @@ import ru.garretech.readmanga.interfaces.OnViewPagerClickListener
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.fragments.PagePickerFragment
 import ru.garretech.readmanga.tools.SiteWorker
+import ru.garretech.readmanga.viewmodels.MangaReaderActivityViewModel
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -31,6 +33,8 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
     var selectedChapterIndex = 0
     lateinit var mMenu : Menu
     lateinit var adapter: ImageScrollAdapter
+
+    lateinit var viewModel : MangaReaderActivityViewModel
 
 
     override fun onNumberPicked(pageIndex: Int) {
@@ -71,6 +75,8 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manga_reader)
 
+        viewModel = ViewModelProviders.of(this).get(MangaReaderActivityViewModel::class.java)
+
         setSupportActionBar(mangaReaderToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -87,8 +93,11 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
 
         mVisible = true
 
-        prepareImageSet(mangaURL,selectedChapter.getString("link"))
-
+        viewModel.prepareHistory(mangaURL).subscribe({
+            prepareImageSet(mangaURL,selectedChapter.getString("link"))
+        },{
+            Log.e("MangaReaderActivity","Ошибка при получении истории",it)
+        })
 
     }
 
@@ -197,7 +206,7 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
 
                 dismissProgressBar()
             }, { error ->
-                Log.e("IMAGELIST OBSERVER", "Ошибка получения списка картинок", error)
+                Log.e("MangaReaderActivity", "Ошибка получения списка картинок", error)
             })
     }
 
@@ -230,9 +239,15 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
                     newChapter.getString("chapterNumber")  + " " +
                     newChapter.getString("chapterName")
 
-            title = chapterName
+            viewModel.historyProvider.addChapter(newChapter.getString("volumeNumber").toInt(),newChapter.getString("chapterNumber").toInt())
 
-            prepareImageSet(mangaURL, newChapter.getString("link"))
+            viewModel.addToHistory().subscribe({
+                title = chapterName
+                prepareImageSet(mangaURL, newChapter.getString("link"))
+            },{
+                Log.e("MangaReaderActivity", "Ошибка сохранения истории", it)
+            })
+
         }
     }
 
@@ -246,9 +261,14 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
                     newChapter.getString("chapterNumber")  + " " +
                     newChapter.getString("chapterName")
 
-            title = chapterName
+            viewModel.historyProvider.addChapter(newChapter.getString("volumeNumber").toInt(),newChapter.getString("chapterNumber").toInt())
 
-            prepareImageSet(mangaURL, newChapter.getString("link"))
+            viewModel.addToHistory().subscribe({
+                title = chapterName
+                prepareImageSet(mangaURL, newChapter.getString("link"))
+            },{
+                Log.e("MangaReaderActivity", "Ошибка сохранения истории", it)
+            })
 
         }
     }

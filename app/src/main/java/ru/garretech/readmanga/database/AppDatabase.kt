@@ -42,6 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_1_2: Migration = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("CREATE TABLE IF NOT EXISTS `history` (`chapters` TEXT, `manga_url` TEXT NOT NULL, PRIMARY KEY(`manga_url`))")
+                database.execSQL("CREATE  INDEX `index_history_manga_url` ON `history` (`manga_url`)")
             }
         }
 

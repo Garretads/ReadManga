@@ -1,5 +1,6 @@
 package ru.garretech.readmanga.fragments
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
@@ -107,7 +108,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
         intent.putExtra("chapterArray",viewModel.chapterJsonArray.toString())
         intent.putExtra("mangaURL",viewModel.currentManga?.url)
 
-        startActivity(intent)
+        startActivityForResult(intent, MANGA_VIEWER_INTENT)
 
     }
 
@@ -154,9 +155,22 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
         sourcesProgress.visibility = View.GONE
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            MANGA_VIEWER_INTENT -> {
+                viewModel.getHistory().subscribe( {
+                    episodesAdapter.notifyDataSetChanged()
+                },{
+                    Log.e("MangaEpisodesFragment","Ошибка при получении истории",it)
+                })
+            }
+        }
+    }
+
     companion object {
 
         const val URL_MANGA = "manga_url"
+        const val MANGA_VIEWER_INTENT = 5
 
         fun newInstance(manga: Manga) = MangaEpisodesFragment().also {
             it.currentManga = manga
