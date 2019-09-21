@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -19,6 +19,7 @@ import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.adapters.ImageScrollAdapter
 import ru.garretech.readmanga.interfaces.OnViewPagerClickListener
 import ru.garretech.readmanga.R
+import ru.garretech.readmanga.adapters.ImageRecycleAdapter
 import ru.garretech.readmanga.fragments.PagePickerFragment
 import ru.garretech.readmanga.tools.SiteWorker
 import ru.garretech.readmanga.viewmodels.MangaReaderActivityViewModel
@@ -33,7 +34,8 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
     val mangaURL : String by lazy { intent.getStringExtra("mangaURL") }
     var selectedChapterIndex = 0
     lateinit var mMenu : Menu
-    lateinit var adapter: ImageScrollAdapter
+    //lateinit var adapter: ImageScrollAdapter
+    lateinit var adapterNew : ImageRecycleAdapter
 
     lateinit var viewModel : MangaReaderActivityViewModel
 
@@ -94,11 +96,13 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
 
         mVisible = true
 
-        viewModel.prepareHistory(mangaURL).subscribe({
+        adapterNew = ImageRecycleAdapter(ArrayList())
+
+        DisposableManager.add(viewModel.prepareHistory(mangaURL).subscribe({
             prepareImageSet(mangaURL,selectedChapter.getString("link"))
         },{
             Log.e("MangaReaderActivity","Ошибка при получении истории",it)
-        })
+        }))
 
     }
 
@@ -168,25 +172,38 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
             .subscribeOn(Schedulers.io())
             .subscribe({ jsonArray ->
 
-                val imageListJson = JSONArray()
+                val imageList = ArrayList<String>()
 
                 for (index in 0 until jsonArray.length()) {
                     val jsonTemp = jsonArray.getJSONArray(index)
                     val link = jsonTemp.get(1).toString() + jsonTemp.get(2).toString()
 
-                    imageListJson.put(link)
+                    imageList.add(link)
                 }
 
+                adapterNew.addAll(imageList)
+                mangaContentView.adapter = adapterNew
+                //adapter = ImageScrollAdapter(this,imageList)
 
-                adapter = ImageScrollAdapter(this,imageListJson)
-
-                pageCount.text = imageListJson.length().toString()
+                pageCount.text = imageList.size.toString()
                 updateCurrentPageText(1)
-                adapter.setCustomOnClickListener(this)
-                mangaContentView.adapter = adapter
+                //adapter.setCustomOnClickListener(this)
+                //mangaContentView.adapter = adapter
+                //mangaContentView.invalidate()
                 mangaContentView.invalidate()
 
-                mangaContentView.setOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+                mangaContentView.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                    override fun onPageScrolled(
+                        position: Int,
+                        positionOffset: Float,
+                        positionOffsetPixels: Int
+                    ) {
+                        updateCurrentPageText(position+1)
+                        super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                    }
+                })
+
+                /*mangaContentView.setOnPageChangeListener(object : ViewPager.OnPageChangeListener {
                     override fun onPageScrollStateChanged(state: Int) {
 
                     }
@@ -198,11 +215,10 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
                     override fun onPageSelected(position: Int) {
 
                     }
-
-                })
+                })*/
 
                 pageSelectorLayout.setOnClickListener {
-                    val pagePicker = PagePickerFragment.newInstance(mangaContentView.currentItem+1,imageListJson.length())
+                    val pagePicker = PagePickerFragment.newInstance(mangaContentView.currentItem+1,imageList.size)
                     pagePicker.view?.setBackgroundResource(android.R.color.transparent)
                     pagePicker.show(supportFragmentManager,"pagePicker")
                 }

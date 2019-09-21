@@ -9,12 +9,20 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
-    <ru.garretech.readmanga.adapters.MangaViewPager
+    <!--<ru.garretech.readmanga.adapters.MangaViewPager
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/mangaContentView"
             app:srcCompat="@drawable/anime">
-    </ru.garretech.readmanga.adapters.MangaViewPager>
+    </ru.garretech.readmanga.adapters.MangaViewPager>-->
+
+    <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/mangaContentView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:clipChildren="true"
+            android:keepScreenOn="true" />
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
