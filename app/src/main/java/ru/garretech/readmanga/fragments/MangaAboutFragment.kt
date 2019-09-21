@@ -116,7 +116,7 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
                 .into(imageView)
 
         initAdMobView()
-
+        
         dismissProgressBar()
     }
 

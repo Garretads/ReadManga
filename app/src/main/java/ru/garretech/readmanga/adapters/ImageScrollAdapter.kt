@@ -35,13 +35,20 @@ class ImageScrollAdapter(private val mContext : Context, private val mImageList:
 
                 val imageView = BigImageView(mContext)
                 imageView.setFailureImage(getDrawable(mContext,R.drawable.broken_image))
+                imageView.setTapToRetry(true)
                 imageView.setOptimizeDisplay(true)
                 imageView.setProgressIndicator(ProgressPieIndicator())
 
 
                 if (position > container.childCount) {
                     for (index in container.childCount..position) {
+                        val imageView = BigImageView(mContext)
+                        imageView.setFailureImage(getDrawable(mContext,R.drawable.broken_image))
+                        imageView.setTapToRetry(true)
+                        imageView.setOptimizeDisplay(true)
+                        imageView.setProgressIndicator(ProgressPieIndicator())
                         imageView.showImage(Uri.parse(mImageList.get(index).toString()))
+
                         container.addView(imageView, index)
                         imageView.setOnClickListener {
                             onViewPagerClickListener.onClick()

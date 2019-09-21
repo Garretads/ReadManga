@@ -15,6 +15,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_manga_reader.*
 import org.json.JSONArray
 import org.json.JSONObject
+import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.adapters.ImageScrollAdapter
 import ru.garretech.readmanga.interfaces.OnViewPagerClickListener
 import ru.garretech.readmanga.R
@@ -161,8 +162,9 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
 
     private fun prepareImageSet(mangaURL : String, path : String) {
         showProgressBar()
+        mangaContentView.offscreenPageLimit = 3
         mangaContentView.removeAllViews()
-        getPhotosRequestSingle(mangaURL + path).observeOn(AndroidSchedulers.mainThread())
+        DisposableManager.add(getPhotosRequestSingle(mangaURL + path).observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe({ jsonArray ->
 
@@ -177,6 +179,7 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
 
 
                 adapter = ImageScrollAdapter(this,imageListJson)
+
                 pageCount.text = imageListJson.length().toString()
                 updateCurrentPageText(1)
                 adapter.setCustomOnClickListener(this)
@@ -207,7 +210,7 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
                 dismissProgressBar()
             }, { error ->
                 Log.e("MangaReaderActivity", "Ошибка получения списка картинок", error)
-            })
+            }))
     }
 
     private fun getPhotosRequestSingle(url: String) : Single<JSONArray> {

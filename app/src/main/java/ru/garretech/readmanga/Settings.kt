@@ -8,7 +8,7 @@ object Settings {
     const val APP_PREFERENCES = "mysettings"
     var max_loaded_in_screen = 15
     const val BLOCK_ID = "adf-304149/991383"
-    const val BLOCK_ID1 = "adf-304149/1034063"
+    const val BLOCK_ID1 = "adf-304149/1036281"
     const val VERSION_CODE = "version_code"
 
 

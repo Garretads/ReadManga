@@ -23,8 +23,8 @@ android {
         applicationId "ru.garretech.readmanga"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 14
-        versionName "1.1.1"
+        versionCode 15
+        versionName "1.1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         signingConfig signingConfigs.release
@@ -99,7 +99,7 @@ dependencies {
     debugImplementation 'im.dino:dbinspector:3.4.1@aar'
 
     implementation 'com.github.piasy:BigImageViewer:1.5.7'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
 
 }
 

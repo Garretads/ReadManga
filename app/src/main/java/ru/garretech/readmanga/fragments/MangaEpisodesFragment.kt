@@ -53,12 +53,12 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
     * */
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MangaEpisodesFragmentViewModel::class.java)
 
         episodesAdapter = ExpandableItemAdapter(viewModel,ArrayList())
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -79,7 +79,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             }
         } else {
             if (viewModel.currentManga == null && currentManga != null)
-                viewModel.currentManga = currentManga
+                    viewModel.currentManga = currentManga
 
             startLoading()
         }
@@ -129,7 +129,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             },{
                 Log.e("Chapter observer","Error getting chapter list",it)
             }))
-    }
+}
 
     private fun showConnectionError() {
         if (progressBottomSheet.isAdded && progressBottomSheet.isVisible)
