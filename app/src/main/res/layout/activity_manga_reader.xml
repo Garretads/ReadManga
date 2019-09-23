@@ -9,94 +9,119 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
-    <!--<ru.garretech.readmanga.adapters.MangaViewPager
+    <ru.garretech.readmanga.adapters.MangaViewPager
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/mangaContentView"
             app:srcCompat="@drawable/anime">
-    </ru.garretech.readmanga.adapters.MangaViewPager>-->
+    </ru.garretech.readmanga.adapters.MangaViewPager>
 
-    <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/mangaContentView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:animateLayoutChanges="true"
-            android:clipChildren="true"
-            android:keepScreenOn="true" />
+    <!-- <androidx.viewpager2.widget.ViewPager2
+             android:id="@+id/mangaContentView"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:animateLayoutChanges="true" /> -->
 
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
+     <!-- This FrameLayout insets its children based on system windows using
+          android:fitsSystemWindows. -->
     <ProgressBar
             android:id="@+id/readerProgress"
             style="?android:attr/progressBarStyleInverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center_vertical"/>
-    <FrameLayout android:layout_width="match_parent"
-                 android:layout_height="match_parent"
-                 android:fitsSystemWindows="true" android:id="@+id/frameLayout">
+
+    <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
 
         <androidx.appcompat.widget.Toolbar
+                android:id="@+id/mangaReaderToolbar"
                 android:layout_width="match_parent"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/black_overlay"
                 android:elevation="4dp"
-                android:id="@+id/mangaReaderToolbar"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
 
-        <LinearLayout android:id="@+id/fullscreen_content_controls"
-                      style="?metaButtonBarStyle"
-                      android:layout_width="match_parent"
-                      android:layout_height="40dp"
-                      android:layout_gravity="bottom|center_horizontal"
-                      android:background="@color/black_overlay"
-                      android:orientation="horizontal"
-                      tools:ignore="UselessParent">
+        <LinearLayout
+                android:id="@+id/fullscreen_content_controls"
+                style="?metaButtonBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:background="@color/black_overlay"
+                android:orientation="horizontal"
+                tools:ignore="UselessParent">
+
             <ImageView
+                    android:id="@+id/buttonSkipPrevious"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" app:srcCompat="@drawable/ic_skip_previous"
-                    android:id="@+id/buttonSkipPrevious" android:layout_weight="1" android:onClick="previousChapter"
-                    android:padding="5dp"/>
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:onClick="previousChapter"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_skip_previous" />
+
             <ImageView
+                    android:id="@+id/buttonPrevious"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" app:srcCompat="@drawable/ic_navigate_before"
-                    android:id="@+id/buttonPrevious" android:layout_weight="1" android:onClick="slidePrevious"
-                    android:padding="5dp"/>
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:onClick="slidePrevious"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_navigate_before" />
+
             <LinearLayout
-                    android:orientation="horizontal"
+                    android:id="@+id/pageSelectorLayout"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" android:id="@+id/pageSelectorLayout">
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
                 <TextView
+                        android:id="@+id/currentPageText"
                         android:layout_width="30dp"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:layout_gravity="center_vertical"
                         android:ems="10"
-                        android:id="@+id/currentPageText" android:textAlignment="center"
-                        android:layout_gravity="center_vertical"/>
+                        android:inputType="number"
+                        android:textAlignment="center" />
+
                 <View
                         android:id="@+id/divider"
                         android:layout_width="1dp"
                         android:layout_height="wrap_content"
-                        android:background="@color/browser_actions_bg_grey"
-                />
+                        android:background="@color/browser_actions_bg_grey" />
+
                 <TextView
+                        android:id="@+id/pageCount"
                         android:layout_width="30dp"
-                        android:layout_height="wrap_content" android:id="@+id/pageCount"
-                        android:textAlignment="center" android:layout_gravity="center_vertical"/>
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:textAlignment="center" />
             </LinearLayout>
+
             <ImageView
+                    android:id="@+id/buttonNext"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" app:srcCompat="@drawable/ic_navigate_next"
-                    android:id="@+id/buttonNext" android:layout_weight="1" android:onClick="slideNext"
-                    android:padding="5dp"/>
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:onClick="slideNext"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_navigate_next" />
+
             <ImageView
+                    android:id="@+id/buttonSkipNext"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" app:srcCompat="@drawable/ic_skip_next"
-                    android:id="@+id/buttonSkipNext" android:layout_weight="1" android:onClick="nextChapter"
-                    android:padding="5dp"/>
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:onClick="nextChapter"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_skip_next" />
         </LinearLayout>
     </FrameLayout>
 

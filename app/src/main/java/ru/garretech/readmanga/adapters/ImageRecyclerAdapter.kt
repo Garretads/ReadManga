@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.indicator.progresspie.ProgressPieIndicator
 import com.github.piasy.biv.view.BigImageView
 import ru.garretech.readmanga.R
 
-class ImageRecycleAdapter(private var imageList : ArrayList<String>) : RecyclerView.Adapter<ImageRecycleAdapter.PagerVH>() {
+class ImageRecyclerAdapter() : RecyclerView.Adapter<ImageRecyclerAdapter.PagerVH>() {
+
+    private var imageList = ArrayList<String>()
 
 
     fun addAll(list : ArrayList<String>) {

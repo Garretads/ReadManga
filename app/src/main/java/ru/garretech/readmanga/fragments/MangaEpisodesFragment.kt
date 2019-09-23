@@ -75,6 +75,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             val url = savedInstanceState.getString(URL_MANGA)
             viewModel.getMangaFromDatabase(url!!).subscribe { manga ->
                 currentManga = manga
+                viewModel.currentManga = currentManga
                 startLoading()
             }
         } else {

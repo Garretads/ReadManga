@@ -1,10 +1,7 @@
 package ru.garretech.readmanga.tools
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import com.chad.library.adapter.base.entity.MultiItemEntity
 
 import io.reactivex.Observable
@@ -25,13 +22,8 @@ import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.models.Volume
 
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileInputStream
 import java.io.FileNotFoundException
-import java.io.FileOutputStream
 import java.io.IOException
-import java.util.Arrays
 import java.util.concurrent.ExecutionException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -712,15 +704,23 @@ class SiteWorker {
                     for (element1 in elements) {
                         var matcher = pattern.matcher(element1.text())
 
-                        if (matcher.find()) {
-                            val currentVolumeNumber = (matcher.group(1) ?: "0").toInt()
+                        val currentVolumeIndex =
+                            if (matcher.find())
+                                (matcher.group(1) ?: "0").toInt()
+                            else {
+                                if (volumeIndex == -1)
+                                    0
+                                else
+                                    volumeIndex
+                            }
+                        //if (matcher.find()) {
 
-                            if (volumeIndex != currentVolumeNumber) {
+                            if (volumeIndex != currentVolumeIndex) {
                                 if (currentVolume != null)
                                     adapterList.add(currentVolume)
 
-                                currentVolume = Volume(currentVolumeNumber)
-                                volumeIndex = currentVolumeNumber
+                                currentVolume = Volume(currentVolumeIndex)
+                                volumeIndex = currentVolumeIndex
                             }
 
 
@@ -731,8 +731,13 @@ class SiteWorker {
                             matcher = pattern.matcher(element1.text())
 
                             var chapterName =
-                                element1.text().substring(element1.text().lastIndexOf("- ") + 3)
-                            chapterName = chapterName.substring(chapterName.indexOf(" ") + 1)
+                                if (matcher.find()) {
+                                    var chapter = element1.text().substring(element1.text().lastIndexOf("- ") + 3)
+                                    chapter = chapter.substring(chapter.indexOf(" ") + 1)
+                                    chapter
+                                }
+                                else
+                                    element1.text()
 
 
                             /*if (matcher.find())
@@ -741,7 +746,7 @@ class SiteWorker {
                                 chapterName = element1.text()*/
 
                             var currentChapter =
-                                Chapter(chapterName, chapterNumber, currentVolumeNumber, link)
+                                Chapter(chapterName, chapterNumber, currentVolumeIndex, link)
 
                             currentVolume?.addSubItem(currentChapter)
 
@@ -749,14 +754,17 @@ class SiteWorker {
 
                             jsonObject.put("chapterName", chapterName)
                             jsonObject.put("chapterNumber", chapterNumber)
-                            jsonObject.put("volumeNumber", currentVolumeNumber)
+                            jsonObject.put("volumeNumber", currentVolumeIndex)
                             jsonObject.put("link", link)
                             chaptersList.put(index, jsonObject)
                             index++
-                        }
+                       // }
                     }
                     if (currentVolume != null && volumeIndex != 0)
                         adapterList.add(currentVolume)
+
+                    if (elements.size == 1)
+                        adapterList.add(currentVolume as Volume)
 
                 } catch (e: InterruptedException) {
                     e.printStackTrace()

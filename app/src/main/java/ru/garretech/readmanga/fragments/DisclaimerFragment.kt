@@ -1,7 +1,9 @@
 package ru.garretech.readmanga.fragments
 
 
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
@@ -25,8 +27,12 @@ class DisclaimerFragment : androidx.fragment.app.DialogFragment() {
         val disclaimerMessage = view.findViewById<TextView>(R.id.disclaimerMessage)
         val button = view.findViewById<Button>(R.id.dissmissDisclaimerButton)
 
-        if (message != null)
-            disclaimerMessage.text = message
+        if (message != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                disclaimerMessage.text = Html.fromHtml(message, Html.FROM_HTML_MODE_COMPACT)
+            } else
+                disclaimerMessage.text = Html.fromHtml(message)
+        }
 
         dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
 
