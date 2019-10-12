@@ -46,6 +46,7 @@ class MangaEpisodesFragmentViewModel(application: Application) : AndroidViewMode
         dataSource.getHistory(currentManga!!)
             .map {
                 historyProvider = HistoryProvider(it)
+                historyProvider
             }
             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 

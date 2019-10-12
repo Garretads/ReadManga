@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.entity.MultiItemEntity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.json.JSONArray
 
 import ru.garretech.readmanga.DisposableManager
@@ -39,6 +40,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
 
     private val recyclerView : RecyclerView by lazy { rootView.findViewById<RecyclerView>(R.id.sourcesRecyclerView) }
     private val sourcesProgress : ProgressBar by lazy { rootView.findViewById<ProgressBar>(R.id.sourcesProgress) }
+    private val goToLastViewedChapterButton : FloatingActionButton by lazy { rootView.findViewById<FloatingActionButton>(R.id.goToLastViewedChapterButton)}
 
     private lateinit var viewModel : MangaEpisodesFragmentViewModel
 
@@ -91,6 +93,20 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             recyclerView.addItemDecoration(mDividerItemDecoration)
         }
 
+
+        goToLastViewedChapterButton.setOnClickListener {
+            if (episodesAdapter.data.size != 0) {
+                val lastWatchedChapterMap = viewModel.historyProvider.getLastWatchedChapter()
+
+                val volumeIndex = lastWatchedChapterMap!!.keys.first()
+                val expandedIndex = volumeIndex + lastWatchedChapterMap!!.values.first()
+
+                episodesAdapter.expand(volumeIndex)
+                recyclerView.scrollToPosition(expandedIndex)
+
+            }
+        }
+
         return rootView
     }
 
@@ -124,6 +140,10 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
                 viewModel.getHistory()
             }
             .subscribe( {
+                if (it.history.chapters != null && it.history.chapters!!.size != 0) {
+                    goToLastViewedChapterButton.visibility = View.VISIBLE
+                }
+
                 episodesAdapter.onExpandableItemClickListener = this
                 updateEpisodeAdapter(viewModel.adapterList)
                 dismissProgressBar()
@@ -178,8 +198,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
         }
     }
 
-
-
+    
     internal inner class CustomDivider(val mDivider: Drawable, val topOffset: Int, val bottomOffset: Int) : RecyclerView.ItemDecoration() {
 
         override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {

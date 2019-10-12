@@ -11,7 +11,7 @@ import ru.garretech.readmanga.models.Volume
 import ru.garretech.readmanga.viewmodels.MangaEpisodesFragmentViewModel
 
 
-class ExpandableItemAdapter(val viewModel : MangaEpisodesFragmentViewModel, data : List<MultiItemEntity>) : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder>(data) {
+class ExpandableItemAdapter(private val viewModel : MangaEpisodesFragmentViewModel, data : List<MultiItemEntity>) : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder>(data) {
     var onExpandableItemClickListener : OnExpandableItemClickListener? = null
 
     var selectedVolume : Int = -1

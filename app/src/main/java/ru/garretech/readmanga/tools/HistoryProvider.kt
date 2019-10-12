@@ -46,4 +46,16 @@ class HistoryProvider(val history: History) {
         }
     }
 
+    fun getLastWatchedChapter() : HashMap<Int,Int>? {
+        return if (history.chapters != null) {
+
+            val lastVolume = history.chapters!!.keys.last()
+            val lastChapter = history.chapters!![lastVolume]!!.size - 1
+
+            HashMap<Int,Int>().also { it[lastVolume] = lastChapter }
+        } else {
+            null
+        }
+    }
+
 }
