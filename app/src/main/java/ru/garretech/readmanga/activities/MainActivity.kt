@@ -444,7 +444,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
        dismissProgressBar()
 
-        //mAdMobView?.resume()
+        //myTargetAdView?.resume()
     }
 
 

@@ -8,7 +8,9 @@ import io.reactivex.schedulers.Schedulers
 import org.json.JSONArray
 import ru.garretech.readmanga.database.AppDataSource
 import ru.garretech.readmanga.fragments.ProgressBottomSheet
+import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
+import ru.garretech.readmanga.models.Volume
 import ru.garretech.readmanga.tools.HistoryProvider
 import ru.garretech.readmanga.tools.SiteWorker
 
@@ -29,6 +31,17 @@ class MangaEpisodesFragmentViewModel(application: Application) : AndroidViewMode
 
     fun getWatchedVolumeIndexes() =
         historyProvider.getWatchedVolumeIndexes()
+
+    fun getIndexOfChapterInAdapter(volumeIndex : Int, chapterNumber : Int) : Int {
+        val volume = adapterList[volumeIndex] as Volume
+
+        for ((index, element) in volume.subItems.withIndex()) {
+            if (element is Chapter && element.chapterNumber == chapterNumber) {
+                return index
+            }
+        }
+        return -1
+    }
 
 
     fun getChaptersList() =

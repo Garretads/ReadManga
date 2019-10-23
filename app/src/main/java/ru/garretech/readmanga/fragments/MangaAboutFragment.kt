@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.my.target.ads.MyTargetView
 import com.yandex.mobile.ads.*
 
 
@@ -31,7 +32,9 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
     private lateinit var viewModel : MangaAboutFragmentViewModel
     private lateinit var rootView : View
 
+    val myTargetAdView: MyTargetView by lazy { MyTargetView(context!!) }
     val mAdMobView: AdView by lazy { AdView(context!!) }
+
     private var mAdRequest: AdRequest? = null
 
     private val mangaTitleTextView : TextView by lazy { rootView.findViewById<TextView>(R.id.mangaTitleText) }
@@ -57,6 +60,27 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
         override fun onAdLoaded() { mAdMobView.visibility = View.VISIBLE }
 
         override fun onAdOpened() {}
+    }
+
+    private val myTargetViewListener = object : MyTargetView.MyTargetViewListener {
+        override fun onLoad(p0: MyTargetView) {
+            //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            val a = 5
+        }
+
+        override fun onClick(p0: MyTargetView) {
+            val a = 5
+        }
+
+        override fun onNoAd(p0: String, p1: MyTargetView) {
+            pageLayout.removeView(myTargetAdView)
+            initAdMobView()
+        }
+
+        override fun onShow(p0: MyTargetView) {
+            myTargetAdView.visibility = View.VISIBLE
+        }
+
     }
 
 
@@ -115,7 +139,7 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
                 //.placeholder(R.drawable.loading_spinner)
                 .into(imageView)
 
-        initAdMobView()
+        initMyTargetAdView()
         
         dismissProgressBar()
     }
@@ -138,6 +162,22 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
         progressCircle?.visibility = View.GONE
     }
 
+    private fun initMyTargetAdView() {
+        //myTargetAdView.adSize = MyTargetView.AdSize.BANNER_300x250
+       // myTargetAdView.adSize = AdSize.flexibleSize()
+        myTargetAdView.init(Settings.MYTARGET_ID,MyTargetView.AdSize.BANNER_300x250)
+
+        myTargetAdView.listener = myTargetViewListener
+        //myTargetAdView.blockId = Settings.BLOCK_ID1
+        //myTargetAdView.adEventListener = mBannerAdListener
+
+        //mAdRequest = AdRequest.Builder().build()
+
+        val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL
+        pageLayout.addView(myTargetAdView, layoutParams)
+    }
+
     private fun initAdMobView() {
         mAdMobView.adSize = AdSize.flexibleSize()
 
@@ -149,15 +189,20 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL
         pageLayout.addView(mAdMobView, layoutParams)
+
+        mAdMobView.loadAd(mAdRequest)
     }
 
     private fun refreshBannerAd() {
+        myTargetAdView.visibility = View.INVISIBLE
         mAdMobView.visibility = View.INVISIBLE
+
+        myTargetAdView.load()
         mAdMobView.loadAd(mAdRequest)
     }
 
     override fun onDestroy() {
-        mAdMobView.destroy()
+        myTargetAdView.destroy()
         super.onDestroy()
     }
 

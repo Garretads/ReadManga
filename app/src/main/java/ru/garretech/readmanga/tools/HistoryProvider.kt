@@ -50,7 +50,7 @@ class HistoryProvider(val history: History) {
         return if (history.chapters != null) {
 
             val lastVolume = history.chapters!!.keys.last()
-            val lastChapter = history.chapters!![lastVolume]!!.size - 1
+            val lastChapter = history.chapters!![lastVolume]!!.last()
 
             HashMap<Int,Int>().also { it[lastVolume] = lastChapter }
         } else {

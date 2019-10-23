@@ -1,6 +1,5 @@
 package ru.garretech.readmanga.fragments
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
@@ -29,6 +28,8 @@ import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
 
 import ru.garretech.readmanga.viewmodels.MangaEpisodesFragmentViewModel
+import androidx.recyclerview.widget.LinearSmoothScroller
+
 
 
 class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItemClickListener {
@@ -96,13 +97,46 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
 
         goToLastViewedChapterButton.setOnClickListener {
             if (episodesAdapter.data.size != 0) {
-                val lastWatchedChapterMap = viewModel.historyProvider.getLastWatchedChapter()
+                val lastWatchedChapterMap =
+                    viewModel.historyProvider.getLastWatchedChapter()
 
                 val volumeIndex = lastWatchedChapterMap!!.keys.first()
-                val expandedIndex = volumeIndex + lastWatchedChapterMap!!.values.first()
 
                 episodesAdapter.expand(volumeIndex)
-                recyclerView.scrollToPosition(expandedIndex)
+                episodesAdapter.notifyDataSetChanged()
+
+                val smoothScroller = object : LinearSmoothScroller(context) {
+                    override fun getVerticalSnapPreference(): Int {
+                        return LinearSmoothScroller.SNAP_TO_START
+                    }
+                }
+
+                val expandedIndex = volumeIndex + viewModel.getIndexOfChapterInAdapter(volumeIndex, lastWatchedChapterMap.values.first()) + 1
+
+                episodesAdapter.registerAdapterDataObserver( object : RecyclerView.AdapterDataObserver() {
+                    override fun onItemRangeMoved(
+                        fromPosition: Int,
+                        toPosition: Int,
+                        itemCount: Int
+                    ) {
+                        super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+                    }
+
+                    override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+                        super.onItemRangeChanged(positionStart, itemCount)
+                    }
+
+                    override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                        super.onItemRangeInserted(positionStart, itemCount)
+                        val expandedIndex = volumeIndex + viewModel.getIndexOfChapterInAdapter(volumeIndex, lastWatchedChapterMap.values.first()) + 1
+
+                        if (expandedIndex != -1) {
+                            smoothScroller.targetPosition = expandedIndex
+                            recyclerView.layoutManager?.startSmoothScroll(smoothScroller)
+                        }
+                    }
+
+                })
 
             }
         }
@@ -111,14 +145,6 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
     }
 
     override fun onChapterClick(item: Chapter) {
-
-        /*
-        *  jsonObject.put("chapterName", element1.text())
-            jsonObject.put("chapterNumber", chapterNumber)
-            jsonObject.put("volumeNumber", currentVolumeNumber)
-            jsonObject.put("link", link)
-        *
-        * */
 
         val intent = Intent(activity,MangaReaderActivity::class.java)
         intent.putExtra("selectedChapterIndex",item.chapterNumber)
@@ -141,7 +167,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             }
             .subscribe( {
                 if (it.history.chapters != null && it.history.chapters!!.size != 0) {
-                    goToLastViewedChapterButton.visibility = View.VISIBLE
+                    showHistoryButton()
                 }
 
                 episodesAdapter.onExpandableItemClickListener = this
@@ -176,10 +202,23 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
         sourcesProgress.visibility = View.GONE
     }
 
+    private fun showHistoryButton() {
+        goToLastViewedChapterButton.visibility = View.VISIBLE
+    }
+
+    private fun hideHistoryButton() {
+        goToLastViewedChapterButton.visibility = View.GONE
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             MANGA_VIEWER_INTENT -> {
                 viewModel.getHistory().subscribe( {
+
+                    if (it.history.chapters != null && it.history.chapters!!.size != 0) {
+                        showHistoryButton()
+                    }
+
                     episodesAdapter.notifyDataSetChanged()
                 },{
                     Log.e("MangaEpisodesFragment","Ошибка при получении истории",it)
