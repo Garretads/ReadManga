@@ -11,3 +11,12 @@
 /build
 /captures
 .externalNativeBuild
+.idea
+build
+gradle
+app/build
+app/debug
+app/release
+app/Users
+app/Schemas
+*.log
