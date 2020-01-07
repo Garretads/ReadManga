@@ -86,7 +86,6 @@ class MangaInfoActivity : AppCompatActivity() {
                 })
             })
         )
-
     }
 
 

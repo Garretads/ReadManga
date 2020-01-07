@@ -17,7 +17,6 @@ import ru.garretech.readmanga.adapters.CustomTableLayout
 
 
 class SortingFragment : DialogFragment() {
-    // TODO: Rename and change types of parameters
     private var initialURL: Uri? = null
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var paramsJSONArray : JSONArray

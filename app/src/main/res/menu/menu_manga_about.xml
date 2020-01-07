@@ -9,9 +9,4 @@ tools:context="ru.garretech.readmanga.activities.MangaInfoActivity">
     android:title="@string/action_favorite"
     app:showAsAction="ifRoom"/>
 
-<item
-    android:id="@+id/action_settings"
-    android:orderInCategory="100"
-    android:title="@string/action_settings"
-    app:showAsAction="never" />
 </menu>

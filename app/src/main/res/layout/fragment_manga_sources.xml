@@ -11,6 +11,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+        <LinearLayout
+                android:id="@+id/sourcesHeaderLayout"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="366dp"
+                    android:layout_height="41dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp" />
+        </LinearLayout>
+
         <ProgressBar
                 android:id="@+id/sourcesProgress"
                 style="?android:attr/progressBarStyleInverse"
@@ -24,12 +42,13 @@
 
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/sourcesRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/sourcesHeaderLayout"
+                tools:listitem="@layout/item_expandable_volume" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/goToLastViewedChapterButton"

@@ -1,9 +1,5 @@
 package ru.garretech.readmanga
 
-/**
- * Created by garred on 14.03.17.
- */
-
 object Settings {
     const val APP_PREFERENCES = "mysettings"
     var max_loaded_in_screen = 15

@@ -1,6 +1,7 @@
 package ru.garretech.readmanga.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -68,10 +69,12 @@ class MangaEpisodesFragmentViewModel(application: Application) : AndroidViewMode
             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
 
-    fun getMangaFromDatabase(url : String) = dataSource.getManga(url)
-        .map {
-            currentManga = it
-            it
-        }
+    fun getMangaFromDatabase(url : String, callback : (Manga) -> Unit) = dataSource.getManga(url)
+        .map { currentManga = it; it }
         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        .subscribe({
+            callback(it)
+        },{
+            Log.e("MangaEpisodeViewModel","Error getting manga entry",it)
+        })
 }

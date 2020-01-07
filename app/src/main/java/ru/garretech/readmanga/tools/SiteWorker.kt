@@ -208,7 +208,7 @@ class SiteWorker {
     }
 
     companion object {
-        val SITE_URL = "http://readmanga.me"
+        val SITE_URL = "https://readmanga.me"
         private val SITE_NAME = "readmanga.me"
         private val editorChoice = "row tiles-row short"
         val NEW_MOVIES_PARAMS = arrayOf("sortType", "created")
@@ -695,6 +695,8 @@ class SiteWorker {
 
                     val element = pageContent?.getElementById("chapterSelectorSelect")
                     var elements = element?.getElementsByTag("option")
+
+
                     elements!!.reverse()
 
                     var index = 0
@@ -785,7 +787,7 @@ class SiteWorker {
         val standartUri: Uri.Builder
             get() {
                 val builder = Uri.Builder()
-                builder.scheme("http")
+                builder.scheme("https")
                     .authority(SITE_NAME)
                 return builder
             }

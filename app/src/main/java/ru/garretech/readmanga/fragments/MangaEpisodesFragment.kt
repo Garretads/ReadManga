@@ -29,7 +29,7 @@ import ru.garretech.readmanga.models.Manga
 
 import ru.garretech.readmanga.viewmodels.MangaEpisodesFragmentViewModel
 import androidx.recyclerview.widget.LinearSmoothScroller
-
+import kotlin.coroutines.CoroutineContext
 
 
 class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItemClickListener {
@@ -46,6 +46,11 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
     private lateinit var viewModel : MangaEpisodesFragmentViewModel
 
     private lateinit var progressBottomSheet: ProgressBottomSheet
+
+    var scrollingObserver :  RecyclerView.AdapterDataObserver? = null
+
+    private var expandedIndex : Int = -1
+
 
     /*  * Переходим по ссылке http://readmanga.me/tower_of_god/vol3/6
     * Считываем количество страниц из элемента с классом pages-count
@@ -76,9 +81,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
 
         if (savedInstanceState != null) {
             val url = savedInstanceState.getString(URL_MANGA)
-            viewModel.getMangaFromDatabase(url!!).subscribe { manga ->
-                currentManga = manga
-                viewModel.currentManga = currentManga
+            viewModel.getMangaFromDatabase(url!!) {
                 startLoading()
             }
         } else {
@@ -97,46 +100,23 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
 
         goToLastViewedChapterButton.setOnClickListener {
             if (episodesAdapter.data.size != 0) {
-                val lastWatchedChapterMap =
-                    viewModel.historyProvider.getLastWatchedChapter()
+                val lastWatchedChapterMap = viewModel.historyProvider.getLastWatchedChapter()!!
 
-                val volumeIndex = lastWatchedChapterMap!!.keys.first()
+                episodesAdapter.expand(lastWatchedChapterMap.keys.first(),false, true)
 
-                episodesAdapter.expand(volumeIndex)
                 episodesAdapter.notifyDataSetChanged()
 
-                val smoothScroller = object : LinearSmoothScroller(context) {
-                    override fun getVerticalSnapPreference(): Int {
-                        return LinearSmoothScroller.SNAP_TO_START
+                val smoothScroller by lazy { object : LinearSmoothScroller(context) {
+                    override fun getVerticalSnapPreference() = LinearSmoothScroller.SNAP_TO_START
                     }
                 }
 
-                val expandedIndex = volumeIndex + viewModel.getIndexOfChapterInAdapter(volumeIndex, lastWatchedChapterMap.values.first()) + 1
+                val expandedIndex = lastWatchedChapterMap.keys.first() + viewModel.getIndexOfChapterInAdapter(lastWatchedChapterMap.keys.first(), lastWatchedChapterMap.values.first()) + 1
 
-                episodesAdapter.registerAdapterDataObserver( object : RecyclerView.AdapterDataObserver() {
-                    override fun onItemRangeMoved(
-                        fromPosition: Int,
-                        toPosition: Int,
-                        itemCount: Int
-                    ) {
-                        super.onItemRangeMoved(fromPosition, toPosition, itemCount)
-                    }
-
-                    override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
-                        super.onItemRangeChanged(positionStart, itemCount)
-                    }
-
-                    override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                        super.onItemRangeInserted(positionStart, itemCount)
-                        val expandedIndex = volumeIndex + viewModel.getIndexOfChapterInAdapter(volumeIndex, lastWatchedChapterMap.values.first()) + 1
-
-                        if (expandedIndex != -1) {
-                            smoothScroller.targetPosition = expandedIndex
-                            recyclerView.layoutManager?.startSmoothScroll(smoothScroller)
-                        }
-                    }
-
-                })
+                if (expandedIndex != -1) {
+                    smoothScroller.targetPosition = expandedIndex
+                    recyclerView.layoutManager?.startSmoothScroll(smoothScroller)
+                }
 
             }
         }
@@ -176,7 +156,9 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             },{
                 Log.e("Chapter observer","Error getting chapter list",it)
             }))
-}
+
+        //setAdapterRangeChangeListener()
+    }
 
     private fun showConnectionError() {
         if (progressBottomSheet.isAdded && progressBottomSheet.isVisible)

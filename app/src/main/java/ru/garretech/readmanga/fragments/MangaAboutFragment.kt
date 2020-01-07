@@ -118,7 +118,7 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
         for (genre in viewModel.currentManga?.genres ?: ArrayList())
             genresString.append("$genre, ")
 
-        if (genresString.length != 0)
+        if (genresString.isNotEmpty())
             mangaGenresView.text = getString(R.string.genres_description) + " " + genresString.substring(0,genresString.length - 2)
 
 
@@ -139,7 +139,8 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
                 //.placeholder(R.drawable.loading_spinner)
                 .into(imageView)
 
-        initMyTargetAdView()
+        //initMyTargetAdView()
+        initAdMobView()
         
         dismissProgressBar()
     }
