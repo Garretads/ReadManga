@@ -4,7 +4,6 @@ package ru.garretech.readmanga.fragments
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
-import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,7 @@ import ru.garretech.readmanga.R
 
 class DisclaimerFragment : androidx.fragment.app.DialogFragment() {
 
-    var message : String? = null
+    var message: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +43,7 @@ class DisclaimerFragment : androidx.fragment.app.DialogFragment() {
 
 
         @JvmStatic
-        fun newInstance(message : String) = DisclaimerFragment().also {
+        fun newInstance(message: String) = DisclaimerFragment().also {
             it.message = message
         }
     }

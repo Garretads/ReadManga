@@ -19,21 +19,21 @@ class MangaEpisodesFragmentViewModel(application: Application) : AndroidViewMode
 
     var currentManga: Manga? = null
 
-    var adapterList : List<MultiItemEntity> = ArrayList<MultiItemEntity>()
-    var chapterJsonArray : JSONArray? = null
+    var adapterList: List<MultiItemEntity> = ArrayList<MultiItemEntity>()
+    var chapterJsonArray: JSONArray? = null
 
     var dataSource = AppDataSource(application)
-    lateinit var historyProvider : HistoryProvider
+    lateinit var historyProvider: HistoryProvider
 
     private var progressBottomSheet = ProgressBottomSheet()
 
-    fun getWatchedChaptersInVolume(seriesIndex : Int) =
+    fun getWatchedChaptersInVolume(seriesIndex: Int) =
         historyProvider.getWatchedChaptersInVolume(seriesIndex)
 
     fun getWatchedVolumeIndexes() =
         historyProvider.getWatchedVolumeIndexes()
 
-    fun getIndexOfChapterInAdapter(volumeIndex : Int, chapterNumber : Int) : Int {
+    fun getIndexOfChapterInAdapter(volumeIndex: Int, chapterNumber: Int): Int {
         val volume = adapterList[volumeIndex] as Volume
 
         for ((index, element) in volume.subItems.withIndex()) {
@@ -69,12 +69,12 @@ class MangaEpisodesFragmentViewModel(application: Application) : AndroidViewMode
             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
 
-    fun getMangaFromDatabase(url : String, callback : (Manga) -> Unit) = dataSource.getManga(url)
+    fun getMangaFromDatabase(url: String, callback: (Manga) -> Unit) = dataSource.getManga(url)
         .map { currentManga = it; it }
         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         .subscribe({
             callback(it)
-        },{
-            Log.e("MangaEpisodeViewModel","Error getting manga entry",it)
+        }, {
+            Log.e("MangaEpisodeViewModel", "Error getting manga entry", it)
         })
 }

@@ -3,13 +3,11 @@ package ru.garretech.readmanga.tools
 import android.content.Context
 import android.net.Uri
 import com.chad.library.adapter.base.entity.MultiItemEntity
-
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -21,14 +19,11 @@ import ru.garretech.readmanga.Settings
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.models.Volume
-
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.concurrent.ExecutionException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 /*
 * Класс для работы с сайтом
@@ -717,50 +712,50 @@ class SiteWorker {
                             }
                         //if (matcher.find()) {
 
-                            if (volumeIndex != currentVolumeIndex) {
-                                if (currentVolume != null)
-                                    adapterList.add(currentVolume)
+                        if (volumeIndex != currentVolumeIndex) {
+                            if (currentVolume != null)
+                                adapterList.add(currentVolume)
 
-                                currentVolume = Volume(currentVolumeIndex)
-                                volumeIndex = currentVolumeIndex
-                            }
-
-
-                            val chapterNumber = index
-                            var link = element1.attr("value")
-                            link = link.substring(URL.length)
-
-                            matcher = pattern.matcher(element1.text())
-
-                            var chapterName =
-                                if (matcher.find()) {
-                                    var chapter = element1.text().substring(element1.text().lastIndexOf("- ") + 3)
-                                    chapter = chapter.substring(chapter.indexOf(" ") + 1)
-                                    chapter
-                                }
-                                else
-                                    element1.text()
+                            currentVolume = Volume(currentVolumeIndex)
+                            volumeIndex = currentVolumeIndex
+                        }
 
 
-                            /*if (matcher.find())
-                                chapterName = matcher.group(1)
-                            else
-                                chapterName = element1.text()*/
+                        val chapterNumber = index
+                        var link = element1.attr("value")
+                        link = link.substring(URL.length)
 
-                            var currentChapter =
-                                Chapter(chapterName, chapterNumber, currentVolumeIndex, link)
+                        matcher = pattern.matcher(element1.text())
 
-                            currentVolume?.addSubItem(currentChapter)
+                        var chapterName =
+                            if (matcher.find()) {
+                                var chapter =
+                                    element1.text().substring(element1.text().lastIndexOf("- ") + 3)
+                                chapter = chapter.substring(chapter.indexOf(" ") + 1)
+                                chapter
+                            } else
+                                element1.text()
 
-                            val jsonObject = JSONObject()
 
-                            jsonObject.put("chapterName", chapterName)
-                            jsonObject.put("chapterNumber", chapterNumber)
-                            jsonObject.put("volumeNumber", currentVolumeIndex)
-                            jsonObject.put("link", link)
-                            chaptersList.put(index, jsonObject)
-                            index++
-                       // }
+                        /*if (matcher.find())
+                            chapterName = matcher.group(1)
+                        else
+                            chapterName = element1.text()*/
+
+                        var currentChapter =
+                            Chapter(chapterName, chapterNumber, currentVolumeIndex, link)
+
+                        currentVolume?.addSubItem(currentChapter)
+
+                        val jsonObject = JSONObject()
+
+                        jsonObject.put("chapterName", chapterName)
+                        jsonObject.put("chapterNumber", chapterNumber)
+                        jsonObject.put("volumeNumber", currentVolumeIndex)
+                        jsonObject.put("link", link)
+                        chaptersList.put(index, jsonObject)
+                        index++
+                        // }
                     }
                     if (currentVolume != null && volumeIndex != 0)
                         adapterList.add(currentVolume)

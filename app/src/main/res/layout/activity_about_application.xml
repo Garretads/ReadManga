@@ -1,71 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.AboutApplicationActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.AboutApplicationActivity">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbarActionBar"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
-        android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbarActionBar"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="30dp"
+            android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:contentDescription="Cho Miyeon"
-            app:srcCompat="@drawable/anime" />
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="Cho Miyeon"
+                app:srcCompat="@drawable/anime" />
 
         <TextView
-            android:id="@+id/versionTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:textSize="20sp"
-            tools:layout_editor_absoluteX="43dp"
-            tools:layout_editor_absoluteY="39dp" />
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/email_text_label"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/email_link_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autoLink="email"
-            android:text="@string/email_link"
-            android:textSize="20sp" />
+                android:id="@+id/versionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:textSize="20sp"
+                tools:layout_editor_absoluteX="43dp"
+                tools:layout_editor_absoluteY="39dp" />
 
 
         <TextView
-            android:id="@+id/privacyPolicyText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/privacyText"
-            android:textSize="20sp"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/email_text_label"
+                android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/privacyPolicyLink"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/privacyLink"
-            android:textSize="20sp"
-            android:autoLink="web"
-            android:linksClickable="true"/>
+                android:id="@+id/email_link_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="email"
+                android:text="@string/email_link"
+                android:textSize="20sp" />
+
+
+        <TextView
+                android:id="@+id/privacyPolicyText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/privacyText"
+                android:textSize="20sp" />
+
+        <TextView
+                android:id="@+id/privacyPolicyLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:text="@string/privacyLink"
+                android:textSize="20sp" />
 
     </LinearLayout>
 

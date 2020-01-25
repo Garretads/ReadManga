@@ -1,12 +1,16 @@
 package ru.garretech.readmanga.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
-@Entity(tableName = "favorites", indices = [Index("manga_url")], foreignKeys = [ForeignKey(entity = Manga::class, parentColumns = ["url"], childColumns = ["manga_url"])])
+@Entity(
+    tableName = "favorites",
+    indices = [Index("manga_url")],
+    foreignKeys = [ForeignKey(
+        entity = Manga::class,
+        parentColumns = ["url"],
+        childColumns = ["manga_url"]
+    )]
+)
 class Favorites {
 
     // Хранить ссылки на фильмы. Только и всего

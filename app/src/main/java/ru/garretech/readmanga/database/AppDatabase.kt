@@ -1,25 +1,26 @@
 package ru.garretech.readmanga.database
 
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import android.content.Context
-
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import ru.garretech.readmanga.models.Favorites
 import ru.garretech.readmanga.models.History
 import ru.garretech.readmanga.models.Manga
-import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.room.migration.Migration
-import android.icu.lang.UCharacter.GraphemeClusterBreak.V
 
 
-
-@Database(entities = [Manga::class, Favorites::class, History::class], version = 2, exportSchema = true)
+@Database(
+    entities = [Manga::class, Favorites::class, History::class],
+    version = 2,
+    exportSchema = true
+)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun movieDAO(): MangaDAO
     abstract fun favoritesDAO(): FavoritesDAO
-    abstract fun historyDAO() : HistoryDAO
+    abstract fun historyDAO(): HistoryDAO
 
     companion object {
 
@@ -31,9 +32,13 @@ abstract class AppDatabase : RoomDatabase() {
             if (INSTANCE == null) {
                 synchronized(AppDatabase::class.java) {
 
-                    INSTANCE = Room.databaseBuilder<AppDatabase>(context, AppDatabase::class.java, DATABASE_NAME)
-                            .addMigrations(MIGRATION_1_2)
-                            .build()
+                    INSTANCE = Room.databaseBuilder<AppDatabase>(
+                        context,
+                        AppDatabase::class.java,
+                        DATABASE_NAME
+                    )
+                        .addMigrations(MIGRATION_1_2)
+                        .build()
                 }
             }
             return INSTANCE

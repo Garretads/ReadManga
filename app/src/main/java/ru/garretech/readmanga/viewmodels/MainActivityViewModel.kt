@@ -10,7 +10,7 @@ import ru.garretech.readmanga.database.AppDataSource
 import ru.garretech.readmanga.fragments.ProgressBottomSheet
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.tools.SiteWorker
-import java.util.HashMap
+import java.util.*
 import java.util.concurrent.ExecutionException
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
@@ -19,15 +19,19 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     var dataSource = AppDataSource(application)
     var mSiteWorker = SiteWorker()
     var requestQuery: SiteWorker.RequestQuery? = null
-    var progressBottomSheet  = ProgressBottomSheet()
+    var progressBottomSheet = ProgressBottomSheet()
 
-    var title : String = ""
+    var title: String = ""
 
     fun getGenresList() =
         SiteWorker.genresList.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
     @Throws(InterruptedException::class, ExecutionException::class, NullPointerException::class)
-    fun getRequestQueryCompletable(requestType : Int, path : String, params : HashMap<String, String>) : Completable {
+    fun getRequestQueryCompletable(
+        requestType: Int,
+        path: String,
+        params: HashMap<String, String>
+    ): Completable {
         return Completable.fromCallable {
             requestQuery = mSiteWorker.RequestQuery(getApplication(), requestType, path, params)
             observable = requestQuery!!.nextQuery
@@ -36,7 +40,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     }
 
     @Throws(InterruptedException::class, ExecutionException::class, NullPointerException::class)
-    fun getRequestQueryCompletable(requestType : Int, path : String) =
+    fun getRequestQueryCompletable(requestType: Int, path: String) =
         Completable.fromCallable {
             requestQuery = mSiteWorker.RequestQuery(getApplication(), requestType, path)
             observable = requestQuery!!.nextQuery
@@ -44,7 +48,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         }.subscribeOn(Schedulers.io())
 
     @Throws(InterruptedException::class, ExecutionException::class, NullPointerException::class)
-    fun getRequestQueryCompletable(requestType : Int) =
+    fun getRequestQueryCompletable(requestType: Int) =
         Completable.fromCallable {
             requestQuery = mSiteWorker.RequestQuery(getApplication(), requestType)
             observable = requestQuery!!.nextQuery
@@ -77,15 +81,18 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             if (requestQuery != null)
                 requestQuery!!.resetOffset()
             else
-                requestQuery = mSiteWorker.RequestQuery(getApplication(), SiteWorker.EDITOR_CHOICE_QUERY)
+                requestQuery =
+                    mSiteWorker.RequestQuery(getApplication(), SiteWorker.EDITOR_CHOICE_QUERY)
 
             observable = requestQuery!!.nextQuery
 
             null
         }.subscribeOn(Schedulers.io())
 
-    fun clearHistory() = dataSource.clearHistory().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+    fun clearHistory() =
+        dataSource.clearHistory().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
-    fun clearFavorites() = dataSource.clearFavorites().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+    fun clearFavorites() =
+        dataSource.clearFavorites().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
 }

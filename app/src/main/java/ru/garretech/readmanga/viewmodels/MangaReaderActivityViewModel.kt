@@ -10,19 +10,19 @@ import ru.garretech.readmanga.tools.HistoryProvider
 
 class MangaReaderActivityViewModel(application: Application) : AndroidViewModel(application) {
 
-    var currentManga : Manga? = null
-    lateinit var historyProvider : HistoryProvider
+    var currentManga: Manga? = null
+    lateinit var historyProvider: HistoryProvider
     var dataSource = AppDataSource(application)
 
 
-    fun prepareHistory(url : String) =
+    fun prepareHistory(url: String) =
         getMangaFromDatabase(url).flatMap {
             currentManga = it
             getHistory()
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
 
-    fun getMangaFromDatabase(url : String) = dataSource.getManga(url)
+    fun getMangaFromDatabase(url: String) = dataSource.getManga(url)
         .map {
             currentManga = it
             it

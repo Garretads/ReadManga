@@ -1,12 +1,9 @@
 package ru.garretech.readmanga.adapters
 
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
+import java.util.*
 
-import java.util.ArrayList
-
-class MovieAboutPagerAdapter(fm: androidx.fragment.app.FragmentManager) : androidx.fragment.app.FragmentStatePagerAdapter(fm) {
+class MovieAboutPagerAdapter(fm: androidx.fragment.app.FragmentManager) :
+    androidx.fragment.app.FragmentStatePagerAdapter(fm) {
 
     private val mFragmentList = ArrayList<androidx.fragment.app.Fragment>()
     private val mFragmentTitleList = ArrayList<String>()

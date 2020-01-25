@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".activities.MangaReaderActivity" android:background="@android:color/black">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        tools:context=".activities.MangaReaderActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
     <ru.garretech.readmanga.adapters.MangaViewPager
+            android:id="@+id/mangaContentView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/mangaContentView"
-            app:srcCompat="@drawable/anime">
-    </ru.garretech.readmanga.adapters.MangaViewPager>
+            app:srcCompat="@drawable/anime"></ru.garretech.readmanga.adapters.MangaViewPager>
 
     <!-- <androidx.viewpager2.widget.ViewPager2
              android:id="@+id/mangaContentView"
@@ -22,14 +23,14 @@
              android:layout_height="match_parent"
              android:animateLayoutChanges="true" /> -->
 
-     <!-- This FrameLayout insets its children based on system windows using
-          android:fitsSystemWindows. -->
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
     <ProgressBar
             android:id="@+id/readerProgress"
             style="?android:attr/progressBarStyleInverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center_vertical"/>
+            android:layout_gravity="center_horizontal|center_vertical" />
 
     <FrameLayout
             android:id="@+id/frameLayout"

@@ -11,10 +11,13 @@ import ru.garretech.readmanga.models.Volume
 import ru.garretech.readmanga.viewmodels.MangaEpisodesFragmentViewModel
 
 
-class ExpandableItemAdapter(private val viewModel : MangaEpisodesFragmentViewModel, data : List<MultiItemEntity>) : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder>(data) {
-    var onExpandableItemClickListener : OnExpandableItemClickListener? = null
+class ExpandableItemAdapter(
+    private val viewModel: MangaEpisodesFragmentViewModel,
+    data: List<MultiItemEntity>
+) : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder>(data) {
+    var onExpandableItemClickListener: OnExpandableItemClickListener? = null
 
-    var selectedVolume : Int = -1
+    var selectedVolume: Int = -1
 
     init {
         addItemType(Volume.TYPE, R.layout.item_expandable_volume)
@@ -22,7 +25,7 @@ class ExpandableItemAdapter(private val viewModel : MangaEpisodesFragmentViewMod
     }
 
 
-    fun setOnChapterClickListener(listener : OnExpandableItemClickListener) {
+    fun setOnChapterClickListener(listener: OnExpandableItemClickListener) {
         onExpandableItemClickListener = listener
     }
 
@@ -31,8 +34,9 @@ class ExpandableItemAdapter(private val viewModel : MangaEpisodesFragmentViewMod
         when (helper?.itemViewType) {
             Volume.TYPE -> {
                 val volume = item as Volume
-                helper.setText(R.id.volumeNameText,"Том ${volume.
-                    volumeNumber}")
+                helper.setText(
+                    R.id.volumeNameText, "Том ${volume.volumeNumber}"
+                )
 
                 val watchedVolumeIndexes = viewModel.getWatchedVolumeIndexes()
 
@@ -53,9 +57,9 @@ class ExpandableItemAdapter(private val viewModel : MangaEpisodesFragmentViewMod
                     }
                 }
             }
-            Chapter.TYPE ->  {
+            Chapter.TYPE -> {
                 val chapter = item as Chapter
-                helper.setText(R.id.chapterNameText,chapter.chapterTitleName)
+                helper.setText(R.id.chapterNameText, chapter.chapterTitleName)
 
                 val watchedChapters = viewModel.getWatchedChaptersInVolume(chapter.volumeNumber)
 
@@ -66,7 +70,10 @@ class ExpandableItemAdapter(private val viewModel : MangaEpisodesFragmentViewMod
 
                 helper.itemView.setOnClickListener {
 
-                    viewModel.historyProvider.addChapter(chapter.volumeNumber,chapter.chapterNumber)
+                    viewModel.historyProvider.addChapter(
+                        chapter.volumeNumber,
+                        chapter.chapterNumber
+                    )
                     flagWatchedChapter(helper)
                     notifyDataSetChanged()
 
@@ -80,20 +87,26 @@ class ExpandableItemAdapter(private val viewModel : MangaEpisodesFragmentViewMod
     }
 
 
-    private fun flagWatchedVolume(helper : BaseViewHolder?) {
-        helper?.setVisible(R.id.watchedVolumeImageView,true)
+    private fun flagWatchedVolume(helper: BaseViewHolder?) {
+        helper?.setVisible(R.id.watchedVolumeImageView, true)
     }
 
-    private fun unflagWatchedVolume(helper : BaseViewHolder?) {
-        helper?.setVisible(R.id.watchedVolumeImageView,false)
+    private fun unflagWatchedVolume(helper: BaseViewHolder?) {
+        helper?.setVisible(R.id.watchedVolumeImageView, false)
     }
 
     private fun flagWatchedChapter(helper: BaseViewHolder?) {
-        helper?.setTextColor(R.id.chapterNameText, ContextCompat.getColor(helper.itemView.context!!,R.color.watched_source))
+        helper?.setTextColor(
+            R.id.chapterNameText,
+            ContextCompat.getColor(helper.itemView.context!!, R.color.watched_source)
+        )
     }
 
     private fun unflagWatchedChapter(helper: BaseViewHolder?) {
-        helper?.setTextColor(R.id.chapterNameText, ContextCompat.getColor(helper.itemView.context!!,android.R.color.secondary_text_dark))
+        helper?.setTextColor(
+            R.id.chapterNameText,
+            ContextCompat.getColor(helper.itemView.context!!, android.R.color.secondary_text_dark)
+        )
     }
 
 

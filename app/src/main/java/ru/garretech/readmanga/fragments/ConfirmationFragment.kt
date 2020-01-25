@@ -49,10 +49,9 @@ class ConfirmationFragment : DialogFragment() {
     }
 
 
-    fun setConfirmationListener(listener : OnFragmentInteractionListener) {
+    fun setConfirmationListener(listener: OnFragmentInteractionListener) {
         this.listener = listener
     }
-
 
 
     override fun onDetach() {
@@ -64,6 +63,7 @@ class ConfirmationFragment : DialogFragment() {
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onAcceptPressed()
+
         fun onCancelPressed()
     }
 

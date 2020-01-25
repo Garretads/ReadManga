@@ -9,10 +9,10 @@ import ru.garretech.readmanga.models.Manga
 
 class MangaAboutFragmentViewModel(application: Application) : AndroidViewModel(application) {
 
-    var currentManga : Manga? = null
+    var currentManga: Manga? = null
     val dataSource = AppDataSource(application)
 
-    fun getMangaFromDatabase(url : String) = dataSource.getManga(url)
+    fun getMangaFromDatabase(url: String) = dataSource.getManga(url)
         .map {
             currentManga = it
             it

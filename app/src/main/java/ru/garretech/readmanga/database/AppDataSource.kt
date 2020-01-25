@@ -3,17 +3,16 @@ package ru.garretech.readmanga.database
 import android.content.Context
 import android.util.Log
 import io.reactivex.Completable
-
-import java.util.ArrayList
-
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.garretech.readmanga.models.Favorites
 import ru.garretech.readmanga.models.History
 import ru.garretech.readmanga.models.Manga
+import java.util.*
+import kotlin.collections.HashMap
 
 class AppDataSource(context: Context) {
-    private val appDatabase : AppDatabase by lazy { AppDatabase.getInstance(context)!! }
+    private val appDatabase: AppDatabase by lazy { AppDatabase.getInstance(context)!! }
     private val mangaDAO: MangaDAO by lazy {
         appDatabase.movieDAO()
     }
@@ -41,7 +40,7 @@ class AppDataSource(context: Context) {
             return Observable.fromArray(list)
         }
 
-    val listOfHistoryObservable : Observable<List<Manga>>
+    val listOfHistoryObservable: Observable<List<Manga>>
         get() {
             val historyList = historyDAO.allHistory
             val movieList = ArrayList<Manga>()
@@ -72,15 +71,15 @@ class AppDataSource(context: Context) {
                 it.onError(NullPointerException())
         }
 
-    fun isInDatabase(url : String) =
-            Single.create<Boolean> {
-                val manga = mangaDAO.getManga(url)
+    fun isInDatabase(url: String) =
+        Single.create<Boolean> {
+            val manga = mangaDAO.getManga(url)
 
-                if (manga != null)
-                    it.onSuccess(true)
-                else
-                    it.onSuccess(false)
-            }
+            if (manga != null)
+                it.onSuccess(true)
+            else
+                it.onSuccess(false)
+        }
 
     fun isFavorite(URL: String): Boolean {
         val favorites = favoritesDAO.getFavoriteByURL(URL)
@@ -118,7 +117,7 @@ class AppDataSource(context: Context) {
             historyDAO.saveHistory(history)
         }
 
-    fun saveHistory(manga: Manga)  {
+    fun saveHistory(manga: Manga) {
         var history = historyDAO.getHistoryByURL(manga.url)
 
         if (history == null) {

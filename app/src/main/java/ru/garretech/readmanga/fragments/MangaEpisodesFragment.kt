@@ -11,14 +11,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.json.JSONArray
-
 import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.activities.MangaReaderActivity
@@ -26,30 +26,31 @@ import ru.garretech.readmanga.adapters.ExpandableItemAdapter
 import ru.garretech.readmanga.interfaces.OnExpandableItemClickListener
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
-
 import ru.garretech.readmanga.viewmodels.MangaEpisodesFragmentViewModel
-import androidx.recyclerview.widget.LinearSmoothScroller
-import kotlin.coroutines.CoroutineContext
 
 
 class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItemClickListener {
 
-    private lateinit var episodesAdapter : ExpandableItemAdapter
-    var currentManga : Manga? = null
+    private lateinit var episodesAdapter: ExpandableItemAdapter
+    var currentManga: Manga? = null
 
-    private lateinit var rootView : View
+    private lateinit var rootView: View
 
-    private val recyclerView : RecyclerView by lazy { rootView.findViewById<RecyclerView>(R.id.sourcesRecyclerView) }
-    private val sourcesProgress : ProgressBar by lazy { rootView.findViewById<ProgressBar>(R.id.sourcesProgress) }
-    private val goToLastViewedChapterButton : FloatingActionButton by lazy { rootView.findViewById<FloatingActionButton>(R.id.goToLastViewedChapterButton)}
+    private val recyclerView: RecyclerView by lazy { rootView.findViewById<RecyclerView>(R.id.sourcesRecyclerView) }
+    private val sourcesProgress: ProgressBar by lazy { rootView.findViewById<ProgressBar>(R.id.sourcesProgress) }
+    private val goToLastViewedChapterButton: FloatingActionButton by lazy {
+        rootView.findViewById<FloatingActionButton>(
+            R.id.goToLastViewedChapterButton
+        )
+    }
 
-    private lateinit var viewModel : MangaEpisodesFragmentViewModel
+    private lateinit var viewModel: MangaEpisodesFragmentViewModel
 
     private lateinit var progressBottomSheet: ProgressBottomSheet
 
-    var scrollingObserver :  RecyclerView.AdapterDataObserver? = null
+    var scrollingObserver: RecyclerView.AdapterDataObserver? = null
 
-    private var expandedIndex : Int = -1
+    private var expandedIndex: Int = -1
 
 
     /*  * Переходим по ссылке http://readmanga.me/tower_of_god/vol3/6
@@ -61,15 +62,18 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
     * */
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MangaEpisodesFragmentViewModel::class.java)
 
-        episodesAdapter = ExpandableItemAdapter(viewModel,ArrayList())
+        episodesAdapter = ExpandableItemAdapter(viewModel, ArrayList())
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_manga_sources, container, false)
 
@@ -86,7 +90,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             }
         } else {
             if (viewModel.currentManga == null && currentManga != null)
-                    viewModel.currentManga = currentManga
+                viewModel.currentManga = currentManga
 
             startLoading()
         }
@@ -102,16 +106,22 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             if (episodesAdapter.data.size != 0) {
                 val lastWatchedChapterMap = viewModel.historyProvider.getLastWatchedChapter()!!
 
-                episodesAdapter.expand(lastWatchedChapterMap.keys.first(),false, true)
+                episodesAdapter.expand(lastWatchedChapterMap.keys.first(), false, true)
 
                 episodesAdapter.notifyDataSetChanged()
 
-                val smoothScroller by lazy { object : LinearSmoothScroller(context) {
-                    override fun getVerticalSnapPreference() = LinearSmoothScroller.SNAP_TO_START
+                val smoothScroller by lazy {
+                    object : LinearSmoothScroller(context) {
+                        override fun getVerticalSnapPreference() =
+                            LinearSmoothScroller.SNAP_TO_START
                     }
                 }
 
-                val expandedIndex = lastWatchedChapterMap.keys.first() + viewModel.getIndexOfChapterInAdapter(lastWatchedChapterMap.keys.first(), lastWatchedChapterMap.values.first()) + 1
+                val expandedIndex =
+                    lastWatchedChapterMap.keys.first() + viewModel.getIndexOfChapterInAdapter(
+                        lastWatchedChapterMap.keys.first(),
+                        lastWatchedChapterMap.values.first()
+                    ) + 1
 
                 if (expandedIndex != -1) {
                     smoothScroller.targetPosition = expandedIndex
@@ -126,10 +136,10 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
 
     override fun onChapterClick(item: Chapter) {
 
-        val intent = Intent(activity,MangaReaderActivity::class.java)
-        intent.putExtra("selectedChapterIndex",item.chapterNumber)
-        intent.putExtra("chapterArray",viewModel.chapterJsonArray.toString())
-        intent.putExtra("mangaURL",viewModel.currentManga?.url)
+        val intent = Intent(activity, MangaReaderActivity::class.java)
+        intent.putExtra("selectedChapterIndex", item.chapterNumber)
+        intent.putExtra("chapterArray", viewModel.chapterJsonArray.toString())
+        intent.putExtra("mangaURL", viewModel.currentManga?.url)
 
         startActivityForResult(intent, MANGA_VIEWER_INTENT)
 
@@ -137,7 +147,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(URL_MANGA,viewModel.currentManga?.url)
+        outState.putString(URL_MANGA, viewModel.currentManga?.url)
     }
 
     private fun startLoading() {
@@ -145,7 +155,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             .flatMap {
                 viewModel.getHistory()
             }
-            .subscribe( {
+            .subscribe({
                 if (it.history.chapters != null && it.history.chapters!!.size != 0) {
                     showHistoryButton()
                 }
@@ -153,9 +163,10 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
                 episodesAdapter.onExpandableItemClickListener = this
                 updateEpisodeAdapter(viewModel.adapterList)
                 dismissProgressBar()
-            },{
-                Log.e("Chapter observer","Error getting chapter list",it)
-            }))
+            }, {
+                Log.e("Chapter observer", "Error getting chapter list", it)
+            })
+        )
 
         //setAdapterRangeChangeListener()
     }
@@ -172,7 +183,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
         return ni != null && ni.isConnected
     }
 
-    private fun updateEpisodeAdapter(episodeList : List<MultiItemEntity>) {
+    private fun updateEpisodeAdapter(episodeList: List<MultiItemEntity>) {
         episodesAdapter.addData(episodeList)
     }
 
@@ -195,15 +206,15 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             MANGA_VIEWER_INTENT -> {
-                viewModel.getHistory().subscribe( {
+                viewModel.getHistory().subscribe({
 
                     if (it.history.chapters != null && it.history.chapters!!.size != 0) {
                         showHistoryButton()
                     }
 
                     episodesAdapter.notifyDataSetChanged()
-                },{
-                    Log.e("MangaEpisodesFragment","Ошибка при получении истории",it)
+                }, {
+                    Log.e("MangaEpisodesFragment", "Ошибка при получении истории", it)
                 })
             }
         }
@@ -219,10 +230,19 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
         }
     }
 
-    
-    internal inner class CustomDivider(val mDivider: Drawable, val topOffset: Int, val bottomOffset: Int) : RecyclerView.ItemDecoration() {
 
-        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+    internal inner class CustomDivider(
+        val mDivider: Drawable,
+        val topOffset: Int,
+        val bottomOffset: Int
+    ) : RecyclerView.ItemDecoration() {
+
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
             super.getItemOffsets(outRect, view, parent, state)
 
             outRect.top = topOffset

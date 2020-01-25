@@ -1,37 +1,28 @@
 package ru.garretech.readmanga.activities
 
+
 import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
-import com.google.android.material.navigation.NavigationView
-import androidx.core.view.GravityCompat
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import android.util.Log
-import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProviders
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-
 import com.chad.library.adapter.base.BaseQuickAdapter
-
-import org.json.JSONException
-import org.json.JSONObject
-
-
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.concurrent.ExecutionException
-import io.reactivex.Completable
+import com.google.android.material.navigation.NavigationView
 import io.reactivex.CompletableObserver
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -47,26 +38,30 @@ import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.Settings
 import ru.garretech.readmanga.adapters.RecyclerAdapter
-import ru.garretech.readmanga.database.AppDataSource
-import ru.garretech.readmanga.fragments.*
+import ru.garretech.readmanga.fragments.ConfirmationFragment
+import ru.garretech.readmanga.fragments.CustomLoadMoreView
+import ru.garretech.readmanga.fragments.DisclaimerFragment
+import ru.garretech.readmanga.fragments.SortingFragment
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.tools.SiteWorker
 import ru.garretech.readmanga.viewmodels.MainActivityViewModel
+import java.util.*
 
-class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, MenuItem.OnActionExpandListener, NavigationView.OnNavigationItemSelectedListener, BaseQuickAdapter.RequestLoadMoreListener, SwipeRefreshLayout.OnRefreshListener, SortingFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
+    MenuItem.OnActionExpandListener, NavigationView.OnNavigationItemSelectedListener,
+    BaseQuickAdapter.RequestLoadMoreListener, SwipeRefreshLayout.OnRefreshListener,
+    SortingFragment.OnFragmentInteractionListener {
 
     private lateinit var searchView: SearchView
     private var mangaAdapter: RecyclerAdapter? = null
-    private lateinit var mAdViewContainer: RelativeLayout
     private lateinit var menu: Menu
 
     private val sortingMenuItem by lazy { menu.findItem(R.id.action_sort) }
     private val clearMenuItem by lazy { menu.findItem(R.id.action_clear) }
     private val searchMenuItem by lazy { menu.findItem(R.id.action_search) }
 
-    private var bag : CompositeDisposable = CompositeDisposable()
+    private var bag: CompositeDisposable = CompositeDisposable()
     private lateinit var viewModel: MainActivityViewModel
-
 
     private var activityState = ACTIVITY_STATE.LOST_CONNECTION
 
@@ -75,30 +70,36 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
             override fun onSubscribe(d: Disposable) {}
 
             override fun onComplete() {
-                DisposableManager.add(viewModel.observable!!
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(updateListConsumer))
+                DisposableManager.add(
+                    viewModel.observable!!
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(updateListConsumer)
+                )
             }
+
             override fun onError(e: Throwable) {
-                Log.e("List observer", "Failed to get manga list",e)
+                Log.e("List observer", "Failed to get manga list", e)
             }
         }
     }
 
 
-    val getOnLoadMoreObserver by lazy {
+    private val getOnLoadMoreObserver by lazy {
         object : CompletableObserver {
             override fun onSubscribe(d: Disposable) {}
 
             override fun onComplete() {
-                DisposableManager.add(viewModel.observable!!
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(onLoadMoreConsumer))
+                DisposableManager.add(
+                    viewModel.observable!!
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(onLoadMoreConsumer)
+                )
             }
+
             override fun onError(e: Throwable) {
-                Log.e("ONLOAD MORE OBSERVER", "Failed to perform on load more request",e)
+                Log.e("ONLOAD MORE OBSERVER", "Failed to perform on load more request", e)
             }
         }
     }
@@ -125,26 +126,51 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
 
-        mAdViewContainer = relativeContainer
+        viewModel = ViewModelProvider.AndroidViewModelFactory(application)
+            .create(MainActivityViewModel::class.java)
 
         navigationView.setNavigationItemSelectedListener(this)
         swipeContainer.setOnRefreshListener(this)
 
-        setSupportActionBar(toolbarActionBar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_menu)
-
+//        setSupportActionBar(mainAppbar as Toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
 
         val metrics = resources.displayMetrics
         var spanCount = (metrics.widthPixels / (115 * metrics.scaledDensity)).toInt()
         Settings.max_loaded_in_screen = spanCount * 8
 
-        movieListRecyclerView!!.layoutManager = GridLayoutManager(this,spanCount)
+        movieListRecyclerView!!.layoutManager = GridLayoutManager(this, spanCount)
         movieListRecyclerView!!.setHasFixedSize(true)
 
-        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbarActionBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        val toggle = ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            supportActionBar?.,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+
+        object : DrawerLayout.DrawerListener {
+            override fun onDrawerStateChanged(newState: Int) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+        }
+
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
@@ -160,13 +186,13 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
         //refreshBannerAd()
     }
 
-    fun showProgressBar() {
+    private fun showProgressBar() {
         if (!viewModel.progressBottomSheet.isAdded) {
             viewModel.progressBottomSheet.show(supportFragmentManager, "progressBar")
         }
     }
 
-    fun dismissProgressBar() {
+    private fun dismissProgressBar() {
         if (viewModel.progressBottomSheet.isAdded)
             viewModel.progressBottomSheet.dismissAllowingStateLoss()
     }
@@ -194,7 +220,11 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
                     val params = HashMap<String, String>()
                     params["q"] = queryString
 
-                    viewModel.getRequestQueryCompletable(SiteWorker.SEARCH_QUERY, SiteWorker.SEARCH_PREFIX, params)
+                    viewModel.getRequestQueryCompletable(
+                        SiteWorker.SEARCH_QUERY,
+                        SiteWorker.SEARCH_PREFIX,
+                        params
+                    )
                         .subscribe(getMangaListObserver)
 
                     title = getString(R.string.search_hint) + ": $queryString"
@@ -211,7 +241,9 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
                 return false
             }
 
-            override fun onQueryTextChange(newText: String): Boolean { return false }
+            override fun onQueryTextChange(newText: String): Boolean {
+                return false
+            }
         })
         return true
     }
@@ -227,23 +259,29 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
                     showProgressBar()
 
-                    DisposableManager.add(Single.create<JSONArray> { observer ->
-                        val jsonArray  = SiteWorker.getSortingParams(viewModel.requestQuery?.requestUri()?.build()!!)
-                        observer.onSuccess(jsonArray)
-                    }.observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe( { jsonArray ->
-                            val sortingFragment = SortingFragment.newInstance(jsonArray,viewModel.requestQuery?.requestUri()?.toString()!!)
-                            sortingFragment.show(supportFragmentManager, "sortingFragment")
+                    DisposableManager.add(
+                        Single.create<JSONArray> { observer ->
+                            val jsonArray =
+                                SiteWorker.getSortingParams(viewModel.requestQuery?.requestUri()?.build()!!)
+                            observer.onSuccess(jsonArray)
+                        }.observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe({ jsonArray ->
+                                val sortingFragment = SortingFragment.newInstance(
+                                    jsonArray,
+                                    viewModel.requestQuery?.requestUri()?.toString()!!
+                                )
+                                sortingFragment.show(supportFragmentManager, "sortingFragment")
 
-                            dismissProgressBar()
+                                dismissProgressBar()
 
-                        }, { Log.d("SORTING FRAGMENT","CAN'T GET SORTING WINDOW") }))
+                            }, { Log.d("SORTING FRAGMENT", "CAN'T GET SORTING WINDOW") })
+                    )
                 }
             }
             R.id.action_clear -> {
 
-                var confirmationDialog : ConfirmationFragment? = null
+                var confirmationDialog: ConfirmationFragment? = null
 
                 when (activityState) {
                     ACTIVITY_STATE.FAVORITES -> {
@@ -335,7 +373,10 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
                     showProgressBar()
 
-                    viewModel.getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, SiteWorker.LIST_PREFIX)
+                    viewModel.getRequestQueryCompletable(
+                        SiteWorker.SIMPLE_QUERY,
+                        SiteWorker.LIST_PREFIX
+                    )
                         .subscribe(getMangaListObserver)
 
                     title = getString(R.string.list_manga_title)
@@ -350,7 +391,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
                     val intent = Intent(this@MainActivity, MangaInfoActivity::class.java)
 
-                    intent.putExtra("is_random",true)
+                    intent.putExtra("is_random", true)
 
                     startActivity(intent)
 
@@ -370,9 +411,13 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
                         intent.putExtra("genres", it.toString())
                         startActivityForResult(intent, GENRES_CODE)
                         dismissProgressBar()
-                    },{
-                        Log.e("MainActivity","Ошибка при получении списка жанров",it)
-                        Toast.makeText(this,"Ошибка при получении списка жанров, попробуйте еще раз",Toast.LENGTH_SHORT)
+                    }, {
+                        Log.e("MainActivity", "Ошибка при получении списка жанров", it)
+                        Toast.makeText(
+                            this,
+                            "Ошибка при получении списка жанров, попробуйте еще раз",
+                            Toast.LENGTH_SHORT
+                        )
 
                     })
                 } else showConnectionError()
@@ -398,7 +443,8 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
                 val intent = Intent(this@MainActivity, AboutApplicationActivity::class.java)
                 startActivity(intent)
             }
-            else -> { }
+            else -> {
+            }
         }
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
@@ -409,7 +455,9 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
-        } else { super.onBackPressed() }
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -442,7 +490,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
     public override fun onResume() {
         super.onResume()
 
-       dismissProgressBar()
+        dismissProgressBar()
 
         //myTargetAdView?.resume()
     }
@@ -460,7 +508,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
     }
 
 
-    override fun onFragmentInteraction(result: Map<String,Any>) {
+    override fun onFragmentInteraction(result: Map<String, Any>) {
 
         if (hasConnection()) {
 
@@ -468,12 +516,19 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
             showProgressBar()
 
-            val params = result.get("params") as HashMap<String,String>
+            val params = result.get("params") as HashMap<String, String>
 
             val completable = if (params.size == 0)
-                viewModel.getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, result["path"] as String)
+                viewModel.getRequestQueryCompletable(
+                    SiteWorker.SIMPLE_QUERY,
+                    result["path"] as String
+                )
             else
-                viewModel.getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, result["path"] as String, params)
+                viewModel.getRequestQueryCompletable(
+                    SiteWorker.SIMPLE_QUERY,
+                    result["path"] as String,
+                    params
+                )
 
             completable.subscribeOn(Schedulers.io())
                 .subscribe(getMangaListObserver)
@@ -488,7 +543,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
             val intent = Intent(this@MainActivity, MangaInfoActivity::class.java)
             intent.putExtra("is_random", false)
-            intent.putExtra("manga_url",selectedManga.url)
+            intent.putExtra("manga_url", selectedManga.url)
 
             startActivity(intent)
         } else showConnectionError()
@@ -497,39 +552,43 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
     override fun onLoadMoreRequested() {
         if (activityState == ACTIVITY_STATE.EDITOR_CHOICE || activityState == ACTIVITY_STATE.MOVIE_LIST) {
-             if (viewModel.requestQuery != null) {
+            if (viewModel.requestQuery != null) {
 
-                 if (viewModel.requestQuery!!.offset() >= viewModel.requestQuery!!.queryAmount()) {
-                     mangaAdapter!!.loadMoreComplete()
-                     mangaAdapter!!.setEnableLoadMore(false)
-                 } else {
-                     if (hasConnection()) {
+                if (viewModel.requestQuery!!.offset() >= viewModel.requestQuery!!.queryAmount()) {
+                    mangaAdapter!!.loadMoreComplete()
+                    mangaAdapter!!.setEnableLoadMore(false)
+                } else {
+                    if (hasConnection()) {
 
-                         viewModel.nextQueryObservable.subscribe(getOnLoadMoreObserver)
+                        viewModel.nextQueryObservable.subscribe(getOnLoadMoreObserver)
 
-                     } else {
-                         //Get more data failed
-                         Toast.makeText(this@MainActivity, R.string.cant_connect_error, Toast.LENGTH_LONG).show()
-                         mangaAdapter!!.loadMoreFail()
+                    } else {
+                        //Get more data failed
+                        Toast.makeText(
+                            this@MainActivity,
+                            R.string.cant_connect_error,
+                            Toast.LENGTH_LONG
+                        ).show()
+                        mangaAdapter!!.loadMoreFail()
 
-                     }
-                 }
-             } else {
+                    }
+                }
+            } else {
                 if (mangaAdapter!!.isLoading)
                     mangaAdapter!!.loadMoreComplete()
                 mangaAdapter!!.setEnableLoadMore(false)
-             }
-         } else {
+            }
+        } else {
             if (mangaAdapter!!.isLoading)
                 mangaAdapter!!.loadMoreComplete()
             mangaAdapter!!.setEnableLoadMore(false)
-         }
+        }
     }
 
 
     override fun onRefresh() {
 
-        when(activityState) {
+        when (activityState) {
 
             ACTIVITY_STATE.EDITOR_CHOICE, ACTIVITY_STATE.MOVIE_LIST, ACTIVITY_STATE.LOST_CONNECTION -> {
                 if (hasConnection()) {
@@ -545,9 +604,9 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
         }
     }
 
-    private fun updateDataList(list: List<Manga>, clear : Boolean) {
+    private fun updateDataList(list: List<Manga>, clear: Boolean) {
 
-        if(clear)
+        if (clear)
             mangaAdapter?.clear()
 
         mangaAdapter!!.addAll(list)
@@ -564,7 +623,8 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
 
     internal fun showConnectionError() {
         activityState = ACTIVITY_STATE.LOST_CONNECTION
-        Toast.makeText(applicationContext, getText(R.string.cant_connect_error), Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, getText(R.string.cant_connect_error), Toast.LENGTH_SHORT)
+            .show()
     }
 
     internal fun hasConnection(): Boolean {
@@ -576,7 +636,6 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
     fun performInitialRequest() {
         if (hasConnection()) {
             changeState(ACTIVITY_STATE.EDITOR_CHOICE)
-
 
             if (viewModel.requestQuery != null) {
                 viewModel.observable?.subscribe(updateListConsumer)
@@ -590,31 +649,31 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
             showConnectionError()
     }
 
-    private fun changeState(newState : ACTIVITY_STATE) {
+    private fun changeState(newState: ACTIVITY_STATE) {
         when (newState) {
             ACTIVITY_STATE.EDITOR_CHOICE -> {
-                activityState =  ACTIVITY_STATE.EDITOR_CHOICE
+                activityState = ACTIVITY_STATE.EDITOR_CHOICE
                 sortingMenuItem.isVisible = false
                 clearMenuItem.isVisible = false
             }
             ACTIVITY_STATE.MOVIE_LIST -> {
-                activityState =  ACTIVITY_STATE.MOVIE_LIST
+                activityState = ACTIVITY_STATE.MOVIE_LIST
                 sortingMenuItem.isVisible = true
                 clearMenuItem.isVisible = false
 
             }
             ACTIVITY_STATE.LOST_CONNECTION -> {
-                activityState =  ACTIVITY_STATE.LOST_CONNECTION
+                activityState = ACTIVITY_STATE.LOST_CONNECTION
 
             }
             ACTIVITY_STATE.HISTORY -> {
-                activityState =  ACTIVITY_STATE.HISTORY
+                activityState = ACTIVITY_STATE.HISTORY
                 sortingMenuItem.isVisible = false
                 clearMenuItem.isVisible = true
 
             }
             ACTIVITY_STATE.FAVORITES -> {
-                activityState =  ACTIVITY_STATE.FAVORITES
+                activityState = ACTIVITY_STATE.FAVORITES
                 sortingMenuItem.isVisible = false
                 clearMenuItem.isVisible = true
 
@@ -634,16 +693,17 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener, 
     private fun firstStartDisclaimer() {
         val mSettings = getSharedPreferences(Settings.APP_PREFERENCES, Context.MODE_PRIVATE)
         val APP_FIRST_RUN = "first_run_check"
-        var isFirstRun = mSettings.getBoolean(APP_FIRST_RUN,true)
+        var isFirstRun = mSettings.getBoolean(APP_FIRST_RUN, true)
         val currentVersion = BuildConfig.VERSION_CODE
-        val savedVersion = mSettings.getInt(Settings.VERSION_CODE,0)
+        val savedVersion = mSettings.getInt(Settings.VERSION_CODE, 0)
 
         if (isFirstRun) {
             val editor = mSettings.edit()
             editor.putBoolean(APP_FIRST_RUN, false)
             editor.apply()
 
-            val disclaimerFragment = DisclaimerFragment.newInstance(getString(R.string.disclaimer_text))
+            val disclaimerFragment =
+                DisclaimerFragment.newInstance(getString(R.string.disclaimer_text))
             disclaimerFragment.show(supportFragmentManager, "disclaimer")
         }
 
