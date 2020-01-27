@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.fragments
+package ru.garretech.readmanga.ui.mangaInfo
 
 import android.content.Context
 import android.content.Intent
@@ -21,12 +21,12 @@ import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.R
-import ru.garretech.readmanga.activities.MangaReaderActivity
+import ru.garretech.readmanga.ui.reader.MangaReaderActivity
 import ru.garretech.readmanga.adapters.ExpandableItemAdapter
+import ru.garretech.readmanga.fragments.ProgressBottomSheet
 import ru.garretech.readmanga.interfaces.OnExpandableItemClickListener
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
-import ru.garretech.readmanga.viewmodels.MangaEpisodesFragmentViewModel
 
 
 class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItemClickListener {
@@ -44,7 +44,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
         )
     }
 
-    private lateinit var viewModel: MangaEpisodesFragmentViewModel
+    private lateinit var viewModel: MangaEpisodesViewModel
 
     private lateinit var progressBottomSheet: ProgressBottomSheet
 
@@ -64,7 +64,7 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MangaEpisodesFragmentViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(MangaEpisodesViewModel::class.java)
 
         episodesAdapter = ExpandableItemAdapter(viewModel, ArrayList())
     }
@@ -106,26 +106,29 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
             if (episodesAdapter.data.size != 0) {
                 val lastWatchedChapterMap = viewModel.historyProvider.getLastWatchedChapter()!!
 
-                episodesAdapter.expand(lastWatchedChapterMap.keys.first(), false, true)
+                //TODO("Найти по выбранному номеру тома её индекс в списке")
+                val expandableVolumeIndex = episodesAdapter.getVolumeIndex(lastWatchedChapterMap.keys.first())
 
-                episodesAdapter.notifyDataSetChanged()
+                expandableVolumeIndex?.let {
+                    episodesAdapter.expand(it, false, true)
 
-                val smoothScroller by lazy {
-                    object : LinearSmoothScroller(context) {
-                        override fun getVerticalSnapPreference() =
-                            LinearSmoothScroller.SNAP_TO_START
+                    episodesAdapter.notifyDataSetChanged()
+
+                    val smoothScroller = object : LinearSmoothScroller(context) {
+                            override fun getVerticalSnapPreference() =
+                                LinearSmoothScroller.SNAP_TO_START
                     }
-                }
 
-                val expandedIndex =
-                    lastWatchedChapterMap.keys.first() + viewModel.getIndexOfChapterInAdapter(
-                        lastWatchedChapterMap.keys.first(),
-                        lastWatchedChapterMap.values.first()
-                    ) + 1
+                    val expandedIndex =
+                        it + viewModel.getIndexOfChapterInAdapter(
+                            it,
+                            lastWatchedChapterMap.values.first()
+                        ) + 1
 
-                if (expandedIndex != -1) {
-                    smoothScroller.targetPosition = expandedIndex
-                    recyclerView.layoutManager?.startSmoothScroll(smoothScroller)
+                    if (expandedIndex != -1) {
+                        smoothScroller.targetPosition = expandedIndex
+                        recyclerView.layoutManager?.startSmoothScroll(smoothScroller)
+                    }
                 }
 
             }
@@ -141,7 +144,9 @@ class MangaEpisodesFragment : androidx.fragment.app.Fragment(), OnExpandableItem
         intent.putExtra("chapterArray", viewModel.chapterJsonArray.toString())
         intent.putExtra("mangaURL", viewModel.currentManga?.url)
 
-        startActivityForResult(intent, MANGA_VIEWER_INTENT)
+        startActivityForResult(intent,
+            MANGA_VIEWER_INTENT
+        )
 
     }
 

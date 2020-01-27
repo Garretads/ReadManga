@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.settings
 
 import android.content.res.Configuration
 import android.os.Bundle

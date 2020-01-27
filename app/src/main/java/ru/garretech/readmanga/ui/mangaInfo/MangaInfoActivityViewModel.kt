@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.viewmodels
+package ru.garretech.readmanga.ui.mangaInfo
 
 import android.app.Application
 import android.util.Log
@@ -14,14 +14,13 @@ import ru.garretech.readmanga.tools.SiteWorker
 
 class MangaInfoActivityViewModel(application: Application) : AndroidViewModel(application) {
 
-    val TAG = MangaInfoActivityViewModel::class.java.simpleName
+    private val TAG = MangaInfoActivityViewModel::class.java.simpleName
 
-    val dataSource = AppDataSource(application)
+    private val dataSource = AppDataSource(application)
     var currentManga: Manga? = null
     var isFavorite: Boolean = false
 
-    var disposableBag = CompositeDisposable()
-
+    private var disposableBag = CompositeDisposable()
 
     fun getMangaInfo(url: String, callback: (Manga) -> Unit) =
         getMangaFromDatabase(url)
@@ -79,7 +78,6 @@ class MangaInfoActivityViewModel(application: Application) : AndroidViewModel(ap
                 isFavorite = it
                 isFavorite
             }
-
 
     val addFavorites =
         Completable.fromCallable { dataSource.addFavorites(currentManga!!) }

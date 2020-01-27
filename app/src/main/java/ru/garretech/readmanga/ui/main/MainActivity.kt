@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.main
 
 
 import android.app.Activity
@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
@@ -31,12 +30,15 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.toolbar.*
 import org.json.JSONArray
 import ru.garretech.readmanga.BuildConfig
 import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.Settings
+import ru.garretech.readmanga.ui.about.AboutApplicationActivity
+import ru.garretech.readmanga.ui.genres.GenresActivity
+import ru.garretech.readmanga.ui.mangaInfo.MangaInfoActivity
+import ru.garretech.readmanga.ui.settings.SettingsActivity
 import ru.garretech.readmanga.adapters.RecyclerAdapter
 import ru.garretech.readmanga.fragments.ConfirmationFragment
 import ru.garretech.readmanga.fragments.CustomLoadMoreView
@@ -44,7 +46,6 @@ import ru.garretech.readmanga.fragments.DisclaimerFragment
 import ru.garretech.readmanga.fragments.SortingFragment
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.tools.SiteWorker
-import ru.garretech.readmanga.viewmodels.MainActivityViewModel
 import java.util.*
 
 class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
@@ -63,7 +64,8 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
     private var bag: CompositeDisposable = CompositeDisposable()
     private lateinit var viewModel: MainActivityViewModel
 
-    private var activityState = ACTIVITY_STATE.LOST_CONNECTION
+    private var activityState =
+        ACTIVITY_STATE.LOST_CONNECTION
 
     val getMangaListObserver by lazy {
         object : CompletableObserver {
@@ -138,7 +140,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
 
         val metrics = resources.displayMetrics
-        var spanCount = (metrics.widthPixels / (115 * metrics.scaledDensity)).toInt()
+        val spanCount = (metrics.widthPixels / (115 * metrics.scaledDensity)).toInt()
         Settings.max_loaded_in_screen = spanCount * 8
 
         movieListRecyclerView!!.layoutManager = GridLayoutManager(this, spanCount)
@@ -147,7 +149,6 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
         val toggle = ActionBarDrawerToggle(
             this,
             drawerLayout,
-            supportActionBar?.,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
@@ -168,7 +169,6 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
             override fun onDrawerOpened(drawerView: View) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
-
         }
 
         drawerLayout.addDrawerListener(toggle)
@@ -409,7 +409,9 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
                     viewModel.getGenresList().subscribe({
                         val intent = Intent(this@MainActivity, GenresActivity::class.java)
                         intent.putExtra("genres", it.toString())
-                        startActivityForResult(intent, GENRES_CODE)
+                        startActivityForResult(intent,
+                            GENRES_CODE
+                        )
                         dismissProgressBar()
                     }, {
                         Log.e("MainActivity", "Ошибка при получении списка жанров", it)
@@ -622,7 +624,8 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
     }
 
     internal fun showConnectionError() {
-        activityState = ACTIVITY_STATE.LOST_CONNECTION
+        activityState =
+            ACTIVITY_STATE.LOST_CONNECTION
         Toast.makeText(applicationContext, getText(R.string.cant_connect_error), Toast.LENGTH_SHORT)
             .show()
     }
@@ -652,28 +655,33 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
     private fun changeState(newState: ACTIVITY_STATE) {
         when (newState) {
             ACTIVITY_STATE.EDITOR_CHOICE -> {
-                activityState = ACTIVITY_STATE.EDITOR_CHOICE
+                activityState =
+                    ACTIVITY_STATE.EDITOR_CHOICE
                 sortingMenuItem.isVisible = false
                 clearMenuItem.isVisible = false
             }
             ACTIVITY_STATE.MOVIE_LIST -> {
-                activityState = ACTIVITY_STATE.MOVIE_LIST
+                activityState =
+                    ACTIVITY_STATE.MOVIE_LIST
                 sortingMenuItem.isVisible = true
                 clearMenuItem.isVisible = false
 
             }
             ACTIVITY_STATE.LOST_CONNECTION -> {
-                activityState = ACTIVITY_STATE.LOST_CONNECTION
+                activityState =
+                    ACTIVITY_STATE.LOST_CONNECTION
 
             }
             ACTIVITY_STATE.HISTORY -> {
-                activityState = ACTIVITY_STATE.HISTORY
+                activityState =
+                    ACTIVITY_STATE.HISTORY
                 sortingMenuItem.isVisible = false
                 clearMenuItem.isVisible = true
 
             }
             ACTIVITY_STATE.FAVORITES -> {
-                activityState = ACTIVITY_STATE.FAVORITES
+                activityState =
+                    ACTIVITY_STATE.FAVORITES
                 sortingMenuItem.isVisible = false
                 clearMenuItem.isVisible = true
 

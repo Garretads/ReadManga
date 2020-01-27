@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+    </data>
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/movie_info_fragment"
@@ -6,10 +12,10 @@
         android:layout_height="match_parent"
         android:background="?attr/colorPrimary"
         android:fillViewport="true"
-        tools:context=".fragments.MangaAboutFragment">
+        tools:context=".ui.mangaInfo.MangaAboutFragment">
 
     <include
-            android:id="@+id/mangaInfoProgressCircle"
+            android:id="@+id/manga_info_progress_circle"
             layout="@layout/progressbar_circle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -21,13 +27,13 @@
             android:layout_height="wrap_content">
 
         <LinearLayout
-                android:id="@+id/mangaInfoScrollContent"
+                android:id="@+id/manga_info_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
             <TextView
-                    android:id="@+id/mangaTitleText"
+                    android:id="@+id/manga_title_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
@@ -127,5 +133,6 @@
 
         </LinearLayout>
     </ScrollView>
-
 </FrameLayout>
+
+</layout>

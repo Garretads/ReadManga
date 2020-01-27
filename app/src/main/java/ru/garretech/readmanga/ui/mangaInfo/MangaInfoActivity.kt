@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.mangaInfo
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,13 +15,11 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import kotlinx.android.synthetic.main.activity_manga_info.*
 import ru.garretech.readmanga.R
+import ru.garretech.readmanga.ui.settings.SettingsActivity
 import ru.garretech.readmanga.adapters.MovieAboutPagerAdapter
 import ru.garretech.readmanga.database.AppDataSource
-import ru.garretech.readmanga.fragments.MangaAboutFragment
-import ru.garretech.readmanga.fragments.MangaEpisodesFragment
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.tools.SiteWorker
-import ru.garretech.readmanga.viewmodels.MangaInfoActivityViewModel
 
 class MangaInfoActivity : AppCompatActivity() {
 

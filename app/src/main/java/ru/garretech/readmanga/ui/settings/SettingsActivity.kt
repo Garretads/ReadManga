@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.settings
 
 import android.annotation.TargetApi
 import android.content.Context
@@ -55,7 +55,9 @@ class SettingsActivity : AppCompatPreferenceActivity() {
      * {@inheritDoc}
      */
     override fun onIsMultiPane(): Boolean {
-        return isXLargeTablet(this)
+        return isXLargeTablet(
+            this
+        )
     }
 
     /**
@@ -92,8 +94,12 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"))
-            bindPreferenceSummaryToValue(findPreference("example_list"))
+            bindPreferenceSummaryToValue(
+                findPreference("example_text")
+            )
+            bindPreferenceSummaryToValue(
+                findPreference("example_list")
+            )
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -121,7 +127,9 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"))
+            bindPreferenceSummaryToValue(
+                findPreference("notifications_new_message_ringtone")
+            )
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -149,7 +157,9 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"))
+            bindPreferenceSummaryToValue(
+                findPreference("sync_frequency")
+            )
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -235,7 +245,8 @@ class SettingsActivity : AppCompatPreferenceActivity() {
          */
         private fun bindPreferenceSummaryToValue(preference: Preference) {
             // Set the listener to watch for value changes.
-            preference.onPreferenceChangeListener = sBindPreferenceSummaryToValueListener
+            preference.onPreferenceChangeListener =
+                sBindPreferenceSummaryToValueListener
 
             // Trigger the listener immediately with the preference's
             // current value.

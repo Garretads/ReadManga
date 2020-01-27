@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.viewmodels
+package ru.garretech.readmanga.ui.mangaInfo
 
 import android.app.Application
 import android.util.Log
@@ -15,7 +15,7 @@ import ru.garretech.readmanga.models.Volume
 import ru.garretech.readmanga.tools.HistoryProvider
 import ru.garretech.readmanga.tools.SiteWorker
 
-class MangaEpisodesFragmentViewModel(application: Application) : AndroidViewModel(application) {
+class MangaEpisodesViewModel(application: Application) : AndroidViewModel(application) {
 
     var currentManga: Manga? = null
 
@@ -30,8 +30,8 @@ class MangaEpisodesFragmentViewModel(application: Application) : AndroidViewMode
     fun getWatchedChaptersInVolume(seriesIndex: Int) =
         historyProvider.getWatchedChaptersInVolume(seriesIndex)
 
-    fun getWatchedVolumeIndexes() =
-        historyProvider.getWatchedVolumeIndexes()
+    fun getWatchedVolumeNumbers() =
+        historyProvider.getWatchedVolumeNumbers()
 
     fun getIndexOfChapterInAdapter(volumeIndex: Int, chapterNumber: Int): Int {
         val volume = adapterList[volumeIndex] as Volume
@@ -50,7 +50,6 @@ class MangaEpisodesFragmentViewModel(application: Application) : AndroidViewMode
             .map {
                 adapterList = it["adapterList"] as List<MultiItemEntity>
                 chapterJsonArray = it["chapterJsonArray"] as JSONArray
-
                 it
             }
             .subscribeOn(Schedulers.io())

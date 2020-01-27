@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.genres
 
 import android.app.Activity
 import android.content.Intent

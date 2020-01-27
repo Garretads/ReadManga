@@ -11,25 +11,24 @@ class HistoryProvider(val history: History) {
     }
 
 
-    fun getWatchedChaptersInVolume(volumeIndex: Int): List<Int> {
-        if (history.chapters!!.containsKey(volumeIndex)) {
-            val indexes = history.chapters!![volumeIndex]
-            return indexes!!
+    fun getWatchedChaptersInVolume(volumeIndex: Int) : List<Int> {
+        return if (history.chapters!!.containsKey(volumeIndex)) {
+            history.chapters!![volumeIndex]!!
         } else {
-            return emptyList()
+            emptyList()
         }
     }
 
-    fun getWatchedVolumeIndexes(): List<Int> {
+    fun getWatchedVolumeNumbers() : List<Int> {
         return if (history.chapters != null)
             history.chapters!!.keys.toList()
         else
-            emptyList<Int>()
+            emptyList()
     }
 
-    fun addChapter(volumeIndex: Int, chapterIndex: Int) {
+    fun addChapter(volumeIndex : Int, chapterIndex : Int) {
         if (history.chapters!!.containsKey(volumeIndex)) {
-            val idArray = history.chapters!!.get(volumeIndex)!!
+            val idArray = history.chapters!![volumeIndex]!!
             val newArray = ArrayList<Int>()
             newArray.addAll(idArray)
 
@@ -37,20 +36,21 @@ class HistoryProvider(val history: History) {
                 newArray.add(chapterIndex)
 
             history.chapters!![volumeIndex] = newArray.toList()
-        } else {
+        }
+        else {
             val idArray = ArrayList<Int>()
             idArray.add(chapterIndex)
             history.chapters!![volumeIndex] = idArray
         }
     }
 
-    fun getLastWatchedChapter(): HashMap<Int, Int>? {
+    fun getLastWatchedChapter() : HashMap<Int,Int>? {
         return if (history.chapters != null) {
 
             val lastVolume = history.chapters!!.keys.last()
             val lastChapter = history.chapters!![lastVolume]!!.last()
 
-            HashMap<Int, Int>().also { it[lastVolume] = lastChapter }
+            HashMap<Int,Int>().also { it[lastVolume] = lastChapter }
         } else {
             null
         }

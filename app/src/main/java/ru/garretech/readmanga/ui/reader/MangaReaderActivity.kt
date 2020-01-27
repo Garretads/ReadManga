@@ -1,11 +1,11 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.reader
 
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import io.reactivex.Single
@@ -15,32 +15,30 @@ import kotlinx.android.synthetic.main.activity_manga_reader.*
 import org.json.JSONArray
 import org.json.JSONObject
 import ru.garretech.readmanga.DisposableManager
+import ru.garretech.readmanga.interfaces.OnViewPagerClickListener
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.adapters.ImageScrollAdapter
 import ru.garretech.readmanga.fragments.PagePickerFragment
-import ru.garretech.readmanga.interfaces.OnViewPagerClickListener
 import ru.garretech.readmanga.tools.SiteWorker
-import ru.garretech.readmanga.viewmodels.MangaReaderActivityViewModel
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
-    PagePickerFragment.OnNumberPickedListener {
+class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PagePickerFragment.OnNumberPickedListener {
 
-    val chapterJsonArray: JSONArray by lazy { JSONArray(intent.getStringExtra("chapterArray")) }
-    val mangaURL: String by lazy { intent.getStringExtra("mangaURL") }
+    val chapterJsonArray : JSONArray by lazy { JSONArray(intent.getStringExtra("chapterArray")) }
+    val mangaURL : String by lazy { intent.getStringExtra("mangaURL") }
     var selectedChapterIndex = 0
-    lateinit var mMenu: Menu
+    lateinit var mMenu : Menu
     lateinit var adapter: ImageScrollAdapter
     //lateinit var adapterNew : ImageRecyclerAdapter
 
-    lateinit var viewModel: MangaReaderActivityViewModel
+    lateinit var viewModel : MangaReaderActivityViewModel
 
 
     override fun onNumberPicked(pageIndex: Int) {
-        mangaContentView.setCurrentItem(pageIndex - 1, true)
+        mangaContentView.setCurrentItem(pageIndex-1,true)
     }
 
     override fun onClick() {
@@ -84,12 +82,12 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
 
         //val imageListString = intent.getStringExtra("imageList")
         //val chapterName = intent.getStringExtra("chapterName")
-        selectedChapterIndex = intent.getIntExtra("selectedChapterIndex", 0)
+        selectedChapterIndex = intent.getIntExtra("selectedChapterIndex",0)
 
         val selectedChapter = chapterJsonArray[selectedChapterIndex] as JSONObject
         val chapterName = selectedChapter.getString("volumeNumber") + "-" +
-                selectedChapter.getString("chapterNumber") + " " +
-                selectedChapter.getString("chapterName")
+                        selectedChapter.getString("chapterNumber")  + " " +
+                        selectedChapter.getString("chapterName")
 
         title = chapterName
 
@@ -100,9 +98,9 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
         //mangaContentView.adapter = adapterNew
 
         DisposableManager.add(viewModel.prepareHistory(mangaURL).subscribe({
-            prepareImageSet(mangaURL, selectedChapter.getString("link"))
-        }, {
-            Log.e("MangaReaderActivity", "Ошибка при получении истории", it)
+            prepareImageSet(mangaURL,selectedChapter.getString("link"))
+        },{
+            Log.e("MangaReaderActivity","Ошибка при получении истории",it)
         }))
 
     }
@@ -117,6 +115,7 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
 
         delayedHide(100)
     }
+
 
 
     private fun toggle() {
@@ -164,7 +163,7 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
         private const val UI_ANIMATION_DELAY = 300
     }
 
-    private fun prepareImageSet(mangaURL: String, path: String) {
+    private fun prepareImageSet(mangaURL : String, path : String) {
         showProgressBar()
         mangaContentView.offscreenPageLimit = 4
         mangaContentView.removeAllViews()
@@ -182,7 +181,7 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
                 }
 
                 //adapterNew.addAll(imageList)
-                adapter = ImageScrollAdapter(this, imageList)
+                adapter = ImageScrollAdapter(this,imageList)
 
                 pageCount.text = imageList.size.toString()
                 updateCurrentPageText(1)
@@ -191,27 +190,23 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
                 mangaContentView.invalidate()
                 //mangaContentView.invalidate()
 
-                /* mangaContentView.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                     override fun onPageScrolled(
-                         position: Int,
-                         positionOffset: Float,
-                         positionOffsetPixels: Int
-                     ) {
-                         updateCurrentPageText(position+1)
-                         super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-                     }
-                 })*/
-                mangaContentView.setOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-                    override fun onPageScrollStateChanged(state: Int) {
-
-                    }
-
+               /* mangaContentView.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageScrolled(
                         position: Int,
                         positionOffset: Float,
                         positionOffsetPixels: Int
                     ) {
-                        updateCurrentPageText(position + 1)
+                        updateCurrentPageText(position+1)
+                        super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                    }
+                })*/
+                mangaContentView.setOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+                    override fun onPageScrollStateChanged(state: Int) {
+
+                    }
+
+                    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                        updateCurrentPageText(position+1)
                     }
 
                     override fun onPageSelected(position: Int) {
@@ -220,22 +215,18 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
                 })
 
                 pageSelectorLayout.setOnClickListener {
-                    val pagePicker = PagePickerFragment.newInstance(
-                        mangaContentView.currentItem + 1,
-                        imageList.size
-                    )
+                    val pagePicker = PagePickerFragment.newInstance(mangaContentView.currentItem+1,imageList.size)
                     pagePicker.view?.setBackgroundResource(android.R.color.transparent)
-                    pagePicker.show(supportFragmentManager, "pagePicker")
+                    pagePicker.show(supportFragmentManager,"pagePicker")
                 }
 
                 dismissProgressBar()
             }, { error ->
                 Log.e("MangaReaderActivity", "Ошибка получения списка картинок", error)
-            })
-        )
+            }))
     }
 
-    private fun getPhotosRequestSingle(url: String): Single<JSONArray> {
+    private fun getPhotosRequestSingle(url: String) : Single<JSONArray> {
         return Single.create { observer ->
             val jsonArray = SiteWorker.getMangaImageList(url)
             observer.onSuccess(jsonArray)
@@ -250,7 +241,7 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
         readerProgress.visibility = View.GONE
     }
 
-    fun updateCurrentPageText(value: Int) {
+    fun updateCurrentPageText(value : Int) {
         currentPageText.text = value.toString()
     }
 
@@ -261,45 +252,35 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener,
             val newChapter = chapterJsonArray[selectedChapterIndex] as JSONObject
 
             val chapterName = newChapter.getString("volumeNumber") + "-" +
-                    newChapter.getString("chapterNumber") + " " +
+                    newChapter.getString("chapterNumber")  + " " +
                     newChapter.getString("chapterName")
 
-            viewModel.historyProvider.addChapter(
-                newChapter.getString("volumeNumber").toInt(),
-                newChapter.getString("chapterNumber").toInt()
-            )
+            viewModel.historyProvider.addChapter(newChapter.getString("volumeNumber").toInt(),newChapter.getString("chapterNumber").toInt())
 
-            viewModel.addToHistory().subscribe({
+            viewModel.addToHistory {
                 title = chapterName
                 prepareImageSet(mangaURL, newChapter.getString("link"))
-            }, {
-                Log.e("MangaReaderActivity", "Ошибка сохранения истории", it)
-            })
+            }
 
         }
     }
 
     fun nextChapter(view: View) {
-        if (selectedChapterIndex < chapterJsonArray.length() - 1) {
+        if (selectedChapterIndex < chapterJsonArray.length()-1) {
             showProgressBar()
             selectedChapterIndex++
             val newChapter = chapterJsonArray[selectedChapterIndex] as JSONObject
 
             val chapterName = newChapter.getString("volumeNumber") + "-" +
-                    newChapter.getString("chapterNumber") + " " +
+                    newChapter.getString("chapterNumber")  + " " +
                     newChapter.getString("chapterName")
 
-            viewModel.historyProvider.addChapter(
-                newChapter.getString("volumeNumber").toInt(),
-                newChapter.getString("chapterNumber").toInt()
-            )
+            viewModel.historyProvider.addChapter(newChapter.getString("volumeNumber").toInt(),newChapter.getString("chapterNumber").toInt())
 
-            viewModel.addToHistory().subscribe({
+            viewModel.addToHistory {
                 title = chapterName
                 prepareImageSet(mangaURL, newChapter.getString("link"))
-            }, {
-                Log.e("MangaReaderActivity", "Ошибка сохранения истории", it)
-            })
+            }
 
         }
     }

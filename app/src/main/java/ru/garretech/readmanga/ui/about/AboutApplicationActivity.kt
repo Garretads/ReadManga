@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.about
 
 import android.os.Bundle
 import android.text.Spannable

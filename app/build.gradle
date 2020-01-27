@@ -13,6 +13,11 @@ android {
             keyPassword 'B324xw'
         }
     }
+
+    dataBinding {
+        enabled = true
+    }
+
     compileSdkVersion 29
     defaultConfig {
 

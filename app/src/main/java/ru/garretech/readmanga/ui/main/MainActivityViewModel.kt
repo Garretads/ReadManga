@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.viewmodels
+package ru.garretech.readmanga.ui.main
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

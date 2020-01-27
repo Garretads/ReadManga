@@ -8,11 +8,11 @@ import ru.garretech.readmanga.R
 import ru.garretech.readmanga.interfaces.OnExpandableItemClickListener
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Volume
-import ru.garretech.readmanga.viewmodels.MangaEpisodesFragmentViewModel
+import ru.garretech.readmanga.ui.mangaInfo.MangaEpisodesViewModel
 
 
 class ExpandableItemAdapter(
-    private val viewModel: MangaEpisodesFragmentViewModel,
+    private val viewModel: MangaEpisodesViewModel,
     data: List<MultiItemEntity>
 ) : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder>(data) {
     var onExpandableItemClickListener: OnExpandableItemClickListener? = null
@@ -22,6 +22,16 @@ class ExpandableItemAdapter(
     init {
         addItemType(Volume.TYPE, R.layout.item_expandable_volume)
         addItemType(Chapter.TYPE, R.layout.item_expandable_chapter)
+    }
+
+    fun getVolumeIndex(volumeNumber: Int): Int? {
+        data.forEach {
+            (it as? Volume)?.let {
+                if (it.volumeNumber == volumeNumber)
+                    return data.indexOf(it)
+            }
+        }
+        return null
     }
 
 
@@ -38,23 +48,20 @@ class ExpandableItemAdapter(
                     R.id.volumeNameText, "Том ${volume.volumeNumber}"
                 )
 
-                val watchedVolumeIndexes = viewModel.getWatchedVolumeIndexes()
+                val watchedVolumeNumbers = viewModel.getWatchedVolumeNumbers()
 
-                if (watchedVolumeIndexes.contains(volume.volumeNumber))
+                if (watchedVolumeNumbers.contains(volume.volumeNumber))
                     flagWatchedVolume(helper)
                 else
                     unflagWatchedVolume(helper)
-
 
                 helper.itemView.setOnClickListener {
                     val pos = helper.adapterPosition
                     selectedVolume = volume.volumeNumber
 
-                    if (item.isExpanded) {
-                        collapse(pos)
-                    } else {
-                        expand(pos)
-                    }
+                    if (item.isExpanded) collapse(pos)
+                    else expand(pos)
+
                 }
             }
             Chapter.TYPE -> {

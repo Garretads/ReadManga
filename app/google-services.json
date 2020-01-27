@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "275521876075",
+    "firebase_url": "https://readmanga-d32ac.firebaseio.com",
+    "project_id": "readmanga-d32ac",
+    "storage_bucket": "readmanga-d32ac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275521876075:android:9c6c21b3a5c732a208412e",
+        "android_client_info": {
+          "package_name": "ru.garretech.readmanga"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275521876075-sb05c8tq88mboqernri8cbgq5kitn8fn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1bS01EoVj3iUJFrZ4aUWnLI7IR3SBde8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275521876075-sb05c8tq88mboqernri8cbgq5kitn8fn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
