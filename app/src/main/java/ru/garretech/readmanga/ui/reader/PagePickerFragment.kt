@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.fragments
+package ru.garretech.readmanga.ui.reader
 
 import android.content.Context
 import android.os.Bundle
@@ -11,7 +11,6 @@ import ru.garretech.readmanga.R
 
 
 class PagePickerFragment : BottomSheetDialogFragment() {
-    // TODO: Rename and change types of parameters
     private var currentPage: Int? = null
     private var maxPages: Int? = null
     private var listener: OnNumberPickedListener? = null

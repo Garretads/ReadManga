@@ -42,8 +42,6 @@ import ru.garretech.readmanga.ui.settings.SettingsActivity
 import ru.garretech.readmanga.adapters.RecyclerAdapter
 import ru.garretech.readmanga.fragments.ConfirmationFragment
 import ru.garretech.readmanga.fragments.CustomLoadMoreView
-import ru.garretech.readmanga.fragments.DisclaimerFragment
-import ru.garretech.readmanga.fragments.SortingFragment
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.tools.SiteWorker
 import java.util.*

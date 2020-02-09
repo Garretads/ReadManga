@@ -18,7 +18,6 @@ import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.interfaces.OnViewPagerClickListener
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.adapters.ImageScrollAdapter
-import ru.garretech.readmanga.fragments.PagePickerFragment
 import ru.garretech.readmanga.tools.SiteWorker
 
 /**

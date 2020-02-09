@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.fragments
+package ru.garretech.readmanga.ui.main
 
 
 import android.os.Build

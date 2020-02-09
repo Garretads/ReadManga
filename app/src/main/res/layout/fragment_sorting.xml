@@ -5,7 +5,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/rounded_shape_strong"
         android:padding="5dp"
-        tools:context=".fragments.SortingFragment">
+        tools:context=".ui.main.SortingFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
