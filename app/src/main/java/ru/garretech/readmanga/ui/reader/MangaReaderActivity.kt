@@ -18,7 +18,7 @@ import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.interfaces.OnViewPagerClickListener
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.adapters.ImageScrollAdapter
-import ru.garretech.readmanga.tools.SiteWorker
+import ru.garretech.readmanga.providers.SiteContentProvider
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -227,7 +227,7 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
 
     private fun getPhotosRequestSingle(url: String) : Single<JSONArray> {
         return Single.create { observer ->
-            val jsonArray = SiteWorker.getMangaImageList(url)
+            val jsonArray = SiteContentProvider.getMangaImageList(url)
             observer.onSuccess(jsonArray)
         }
     }

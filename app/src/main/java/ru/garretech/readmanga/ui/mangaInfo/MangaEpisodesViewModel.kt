@@ -12,8 +12,8 @@ import ru.garretech.readmanga.fragments.ProgressBottomSheet
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.models.Volume
-import ru.garretech.readmanga.tools.HistoryProvider
-import ru.garretech.readmanga.tools.SiteWorker
+import ru.garretech.readmanga.providers.HistoryProvider
+import ru.garretech.readmanga.providers.SiteContentProvider
 
 class MangaEpisodesViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -46,7 +46,7 @@ class MangaEpisodesViewModel(application: Application) : AndroidViewModel(applic
 
 
     fun getChaptersList() =
-        SiteWorker.formChaptersList(currentManga?.url!!, currentManga?.lastChapter!!)
+        SiteContentProvider.formChaptersList(currentManga?.url!!, currentManga?.lastChapter!!)
             .map {
                 adapterList = it["adapterList"] as List<MultiItemEntity>
                 chapterJsonArray = it["chapterJsonArray"] as JSONArray
@@ -58,7 +58,8 @@ class MangaEpisodesViewModel(application: Application) : AndroidViewModel(applic
     fun getHistory() =
         dataSource.getHistory(currentManga!!)
             .map {
-                historyProvider = HistoryProvider(it)
+                historyProvider =
+                    HistoryProvider(it)
                 historyProvider
             }
             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())

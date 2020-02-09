@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.tools
+package ru.garretech.readmanga.providers
 
 import android.content.Context
 import android.net.Uri
@@ -19,6 +19,7 @@ import ru.garretech.readmanga.Settings
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.models.Volume
+import ru.garretech.readmanga.tools.PageDownloader
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.concurrent.ExecutionException
@@ -32,7 +33,7 @@ import java.util.regex.Pattern
 * В отдельном методе формируется список фильмов editorChoice
 *
 * */
-class SiteWorker {
+class SiteContentProvider {
 
     inner class RequestQuery {
         private var requestType: Int = 0
@@ -56,8 +57,10 @@ class SiteWorker {
             get() = if (queryAmount == -1 || currentOffset < queryAmount) {
                 when (requestType) {
                     SIMPLE_QUERY -> {
-                        val pageDownloader = PageDownloader()
-                        uriQuery = standartUri
+                        val pageDownloader =
+                            PageDownloader()
+                        uriQuery =
+                            standartUri
 
                         if (path!!.contains("/")) {
                             val pathArray =
@@ -82,9 +85,17 @@ class SiteWorker {
                         if (pageContent != null) {
 
                             if (queryAmount == -1)
-                                queryAmount = getMaxQueryElementCount(pageContent)
+                                queryAmount =
+                                    getMaxQueryElementCount(
+                                        pageContent
+                                    )
 
-                            val result = mangaListContentParse(context, pageContent, limit)
+                            val result =
+                                mangaListContentParse(
+                                    context,
+                                    pageContent,
+                                    limit
+                                )
 
                             val resultArray = result["list"] as List<Manga>
                             list?.addAll(resultArray)
@@ -98,25 +109,35 @@ class SiteWorker {
                     SEARCH_QUERY -> {
                         val client = OkHttpClient()
 
-                        uriQuery = standartUri
+                        uriQuery =
+                            standartUri
                         uriQuery!!.appendPath(path)
 
                         parameters!![OFFSET_PARAM] = currentOffset.toString()
 
-                        val request = searchRequest(
-                            uriQuery!!.toString(),
-                            parameters!!["q"],
-                            parameters!![OFFSET_PARAM]
-                        )
+                        val request =
+                            searchRequest(
+                                uriQuery!!.toString(),
+                                parameters!!["q"],
+                                parameters!![OFFSET_PARAM]
+                            )
 
                         val response = client.newCall(request).execute()
 
                         val pageContent = Jsoup.parse(response.body()?.string())
 
                         if (queryAmount == -1)
-                            queryAmount = getMaxSearchElementCount(pageContent)
+                            queryAmount =
+                                getMaxSearchElementCount(
+                                    pageContent
+                                )
 
-                        val result = mangaListContentParse(context, pageContent, limit)
+                        val result =
+                            mangaListContentParse(
+                                context,
+                                pageContent,
+                                limit
+                            )
 
                         val resultArray = result["list"] as List<Manga>
                         list?.addAll(resultArray)
@@ -128,7 +149,9 @@ class SiteWorker {
                     EDITOR_CHOICE_QUERY -> {
                         queryAmount = 5
                         currentOffset = 5
-                        getEditorChoiceMangasList(context).let {
+                        getEditorChoiceMangasList(
+                            context
+                        ).let {
                             list = ArrayList(); list?.addAll(it); Observable.fromArray(it)
                         }
                     }
@@ -285,7 +308,8 @@ class SiteWorker {
             Single.create<JSONArray> {
                 val genresList = JSONArray()
                 val URL_PREFIX = "/list/genres/sort_name"
-                val pageDownloader = PageDownloader()
+                val pageDownloader =
+                    PageDownloader()
                 val pageContent: Document?
 
                 pageContent = pageDownloader.execute(SITE_URL + URL_PREFIX).get()
@@ -391,7 +415,8 @@ class SiteWorker {
         fun getMangaInfo(URL: String) =
             Single.create<Manga> {
                 val info = JSONObject()
-                val pageDownloader = PageDownloader()
+                val pageDownloader =
+                    PageDownloader()
                 val pageContent: Document?
                 var name = ""
                 var eng_name = ""
@@ -673,7 +698,8 @@ class SiteWorker {
                 val patternChapterName = Pattern.compile("\\s\\w*\\s(.*\$)")
                 val ADULT_PREFIX = "?mtr=1"
                 val adapterList: ArrayList<MultiItemEntity> = ArrayList<MultiItemEntity>()
-                val pageDownloader = PageDownloader()
+                val pageDownloader =
+                    PageDownloader()
                 val pageContent: Document?
                 //var doesntHaveNumberInTitle = false
 

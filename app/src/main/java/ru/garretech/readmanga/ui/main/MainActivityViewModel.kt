@@ -9,7 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import ru.garretech.readmanga.database.AppDataSource
 import ru.garretech.readmanga.fragments.ProgressBottomSheet
 import ru.garretech.readmanga.models.Manga
-import ru.garretech.readmanga.tools.SiteWorker
+import ru.garretech.readmanga.providers.SiteContentProvider
 import java.util.*
 import java.util.concurrent.ExecutionException
 
@@ -17,14 +17,14 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     var observable: Observable<List<Manga>>? = null
     var dataSource = AppDataSource(application)
-    var mSiteWorker = SiteWorker()
-    var requestQuery: SiteWorker.RequestQuery? = null
+    var mSiteWorker = SiteContentProvider()
+    var requestQuery: SiteContentProvider.RequestQuery? = null
     var progressBottomSheet = ProgressBottomSheet()
 
     var title: String = ""
 
     fun getGenresList() =
-        SiteWorker.genresList.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        SiteContentProvider.genresList.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
     @Throws(InterruptedException::class, ExecutionException::class, NullPointerException::class)
     fun getRequestQueryCompletable(
@@ -82,7 +82,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
                 requestQuery!!.resetOffset()
             else
                 requestQuery =
-                    mSiteWorker.RequestQuery(getApplication(), SiteWorker.EDITOR_CHOICE_QUERY)
+                    mSiteWorker.RequestQuery(getApplication(), SiteContentProvider.EDITOR_CHOICE_QUERY)
 
             observable = requestQuery!!.nextQuery
 

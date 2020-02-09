@@ -10,8 +10,8 @@ import io.reactivex.schedulers.Schedulers
 import org.json.JSONArray
 import ru.garretech.readmanga.database.AppDataSource
 import ru.garretech.readmanga.models.Manga
-import ru.garretech.readmanga.tools.HistoryProvider
-import ru.garretech.readmanga.tools.SiteWorker
+import ru.garretech.readmanga.providers.HistoryProvider
+import ru.garretech.readmanga.providers.SiteContentProvider
 
 class MangaReaderActivityViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -40,7 +40,8 @@ class MangaReaderActivityViewModel(application: Application) : AndroidViewModel(
     fun getHistory() =
         dataSource.getHistory(currentManga!!)
             .map {
-                historyProvider = HistoryProvider(it)
+                historyProvider =
+                    HistoryProvider(it)
             }
             .subscribeOn(Schedulers.io())
 
@@ -57,7 +58,7 @@ class MangaReaderActivityViewModel(application: Application) : AndroidViewModel(
 
     private fun getPhotosRequestSingle(url: String) : Single<JSONArray> {
         return Single.create { observer ->
-            val jsonArray = SiteWorker.getMangaImageList(url)
+            val jsonArray = SiteContentProvider.getMangaImageList(url)
             observer.onSuccess(jsonArray)
         }
     }

@@ -19,7 +19,7 @@ import ru.garretech.readmanga.ui.settings.SettingsActivity
 import ru.garretech.readmanga.adapters.MovieAboutPagerAdapter
 import ru.garretech.readmanga.database.AppDataSource
 import ru.garretech.readmanga.models.Manga
-import ru.garretech.readmanga.tools.SiteWorker
+import ru.garretech.readmanga.providers.SiteContentProvider
 
 class MangaInfoActivity : AppCompatActivity() {
 
@@ -51,7 +51,7 @@ class MangaInfoActivity : AppCompatActivity() {
         isRandom = intent.getBooleanExtra("is_random", true)
 
         var url: String = if (isRandom) {
-            SiteWorker.RANDOM_MOVIE_PREFIX
+            SiteContentProvider.RANDOM_MOVIE_PREFIX
         } else {
             intent.getStringExtra("manga_url")!!
         }

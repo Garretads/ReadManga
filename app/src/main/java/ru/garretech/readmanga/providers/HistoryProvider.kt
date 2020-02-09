@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.tools
+package ru.garretech.readmanga.providers
 
 import ru.garretech.readmanga.models.History
 

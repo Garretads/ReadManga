@@ -10,7 +10,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import ru.garretech.readmanga.database.AppDataSource
 import ru.garretech.readmanga.models.Manga
-import ru.garretech.readmanga.tools.SiteWorker
+import ru.garretech.readmanga.providers.SiteContentProvider
 
 class MangaInfoActivityViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -38,7 +38,7 @@ class MangaInfoActivityViewModel(application: Application) : AndroidViewModel(ap
                 }
             }).also { disposableBag.add(it) }
 
-    fun getMangaFromAPISingle(url: String) = SiteWorker.getMangaInfo(url)
+    fun getMangaFromAPISingle(url: String) = SiteContentProvider.getMangaInfo(url)
         .map {
             currentManga = it
             it

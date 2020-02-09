@@ -43,7 +43,7 @@ import ru.garretech.readmanga.adapters.RecyclerAdapter
 import ru.garretech.readmanga.fragments.ConfirmationFragment
 import ru.garretech.readmanga.fragments.CustomLoadMoreView
 import ru.garretech.readmanga.models.Manga
-import ru.garretech.readmanga.tools.SiteWorker
+import ru.garretech.readmanga.providers.SiteContentProvider
 import java.util.*
 
 class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
@@ -219,8 +219,8 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
                     params["q"] = queryString
 
                     viewModel.getRequestQueryCompletable(
-                        SiteWorker.SEARCH_QUERY,
-                        SiteWorker.SEARCH_PREFIX,
+                        SiteContentProvider.SEARCH_QUERY,
+                        SiteContentProvider.SEARCH_PREFIX,
                         params
                     )
                         .subscribe(getMangaListObserver)
@@ -260,7 +260,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
                     DisposableManager.add(
                         Single.create<JSONArray> { observer ->
                             val jsonArray =
-                                SiteWorker.getSortingParams(viewModel.requestQuery?.requestUri()?.build()!!)
+                                SiteContentProvider.getSortingParams(viewModel.requestQuery?.requestUri()?.build()!!)
                             observer.onSuccess(jsonArray)
                         }.observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
@@ -356,7 +356,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
 
                     showProgressBar()
 
-                    viewModel.getRequestQueryCompletable(SiteWorker.EDITOR_CHOICE_QUERY)
+                    viewModel.getRequestQueryCompletable(SiteContentProvider.EDITOR_CHOICE_QUERY)
                         .subscribe(getMangaListObserver)
 
                     title = getString(R.string.editor_choice_title)
@@ -372,8 +372,8 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
                     showProgressBar()
 
                     viewModel.getRequestQueryCompletable(
-                        SiteWorker.SIMPLE_QUERY,
-                        SiteWorker.LIST_PREFIX
+                        SiteContentProvider.SIMPLE_QUERY,
+                        SiteContentProvider.LIST_PREFIX
                     )
                         .subscribe(getMangaListObserver)
 
@@ -472,7 +472,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
 
                 changeState(ACTIVITY_STATE.MOVIE_LIST)
 
-                viewModel.getRequestQueryCompletable(SiteWorker.SIMPLE_QUERY, resultPrefix)
+                viewModel.getRequestQueryCompletable(SiteContentProvider.SIMPLE_QUERY, resultPrefix)
                     .subscribe(getMangaListObserver)
 
                 title = genreName.substring(0, 1).toUpperCase() + genreName.substring(1)
@@ -520,12 +520,12 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
 
             val completable = if (params.size == 0)
                 viewModel.getRequestQueryCompletable(
-                    SiteWorker.SIMPLE_QUERY,
+                    SiteContentProvider.SIMPLE_QUERY,
                     result["path"] as String
                 )
             else
                 viewModel.getRequestQueryCompletable(
-                    SiteWorker.SIMPLE_QUERY,
+                    SiteContentProvider.SIMPLE_QUERY,
                     result["path"] as String,
                     params
                 )
@@ -643,7 +643,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
             } else {
                 showProgressBar()
 
-                viewModel.getRequestQueryCompletable(SiteWorker.EDITOR_CHOICE_QUERY)
+                viewModel.getRequestQueryCompletable(SiteContentProvider.EDITOR_CHOICE_QUERY)
                     .subscribe(getMangaListObserver)
             }
         } else
