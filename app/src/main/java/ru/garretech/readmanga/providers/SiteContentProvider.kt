@@ -124,7 +124,7 @@ class SiteContentProvider {
 
                         val response = client.newCall(request).execute()
 
-                        val pageContent = Jsoup.parse(response.body?.string())
+                        val pageContent = Jsoup.parse(response.body()?.string())
 
                         if (queryAmount == -1)
                             queryAmount =
