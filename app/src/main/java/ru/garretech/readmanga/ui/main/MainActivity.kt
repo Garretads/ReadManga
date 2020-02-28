@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
@@ -58,6 +59,8 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
     private val sortingMenuItem by lazy { menu.findItem(R.id.action_sort) }
     private val clearMenuItem by lazy { menu.findItem(R.id.action_clear) }
     private val searchMenuItem by lazy { menu.findItem(R.id.action_search) }
+
+    private val toolbar: Toolbar by lazy { mainAppbar as Toolbar }
 
     private var bag: CompositeDisposable = CompositeDisposable()
     private lateinit var viewModel: MainActivityViewModel
@@ -133,7 +136,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
         navigationView.setNavigationItemSelectedListener(this)
         swipeContainer.setOnRefreshListener(this)
 
-//        setSupportActionBar(mainAppbar as Toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
 
@@ -147,6 +150,7 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
         val toggle = ActionBarDrawerToggle(
             this,
             drawerLayout,
+            toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )

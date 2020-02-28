@@ -124,7 +124,7 @@ class SiteContentProvider {
 
                         val response = client.newCall(request).execute()
 
-                        val pageContent = Jsoup.parse(response.body()?.string())
+                        val pageContent = Jsoup.parse(response.body?.string())
 
                         if (queryAmount == -1)
                             queryAmount =
@@ -368,7 +368,7 @@ class SiteContentProvider {
             if (matcher.find())
                 resultAmount = matcher.group(1)
 
-            resultAmount = resultAmount.substring(0, resultAmount.lastIndexOf("]") + 1)
+            resultAmount = resultAmount.substring(0, resultAmount.lastIndexOf("]") + 1).replace("manga/","")
 
             //val pageCount = pageContent.getElementsByClass("pages-count")?.first()?.text()
             //var imageUrl = pageContent.getElementById("fotocontext").getElementsByTag("img").attr("src")

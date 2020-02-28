@@ -3,11 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     signingConfigs {
         release {
-            storeFile file(readmanga_key)
+            storeFile file('/Users/sergei/readmanga_key')
             storePassword 'B324xw'
             keyAlias = 'key0'
             keyPassword 'B324xw'
@@ -108,7 +109,7 @@ dependencies {
 
     debugImplementation 'im.dino:dbinspector:4.0.0@aar'
 
-    implementation 'com.github.piasy:BigImageViewer:1.5.7'
+    implementation 'com.github.piasy:BigImageViewer:1.6.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
 }

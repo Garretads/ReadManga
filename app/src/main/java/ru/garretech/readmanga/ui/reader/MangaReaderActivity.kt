@@ -170,14 +170,16 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
             .subscribeOn(Schedulers.io())
             .subscribe({ jsonArray ->
 
-                val imageList = ArrayList<String>()
+                var imageList = ArrayList<String>()
 
                 for (index in 0 until jsonArray.length()) {
                     val jsonTemp = jsonArray.getJSONArray(index)
-                    val link = jsonTemp.get(1).toString() + jsonTemp.get(2).toString()
+
+                    val link = jsonTemp.get(0).toString() + jsonTemp.get(2).toString()
 
                     imageList.add(link)
                 }
+
 
                 //adapterNew.addAll(imageList)
                 adapter = ImageScrollAdapter(this,imageList)
