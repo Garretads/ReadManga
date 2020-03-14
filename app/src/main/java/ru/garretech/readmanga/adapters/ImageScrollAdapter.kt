@@ -8,14 +8,14 @@ import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.viewpager.widget.PagerAdapter
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.indicator.progresspie.ProgressPieIndicator
-import org.json.JSONArray
 import com.github.piasy.biv.view.BigImageView
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.interfaces.OnViewPagerClickListener
 
 
-class ImageScrollAdapter(private val mContext : Context, private val mImageList: ArrayList<String>) : PagerAdapter() {
-    lateinit var onViewPagerClickListener : OnViewPagerClickListener
+class ImageScrollAdapter(private val mContext: Context, private val mImageList: ArrayList<String>) :
+    PagerAdapter() {
+    lateinit var onViewPagerClickListener: OnViewPagerClickListener
 
     init {
 
@@ -39,42 +39,42 @@ class ImageScrollAdapter(private val mContext : Context, private val mImageList:
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         synchronized(ImageScrollAdapter::class) {
 
-           // if (container.getChildAt(position) == null) {
+            // if (container.getChildAt(position) == null) {
 
-                val imageView = BigImageView(mContext)
-                imageView.setFailureImage(getDrawable(mContext,R.drawable.broken_image))
-                imageView.setTapToRetry(true)
-                imageView.setOptimizeDisplay(true)
-                imageView.setProgressIndicator(ProgressPieIndicator())
+            val imageView = BigImageView(mContext)
+            imageView.setFailureImage(getDrawable(mContext, R.drawable.broken_image))
+            imageView.setTapToRetry(true)
+            imageView.setOptimizeDisplay(true)
+            imageView.setProgressIndicator(ProgressPieIndicator())
 
 
-                /*if (position > container.childCount) {
-                    for (index in container.childCount until mImageList.size) {
-                        val imageView = BigImageView(mContext)
-                        imageView.setFailureImage(getDrawable(mContext,R.drawable.broken_image))
-                        imageView.setTapToRetry(true)
-                        imageView.setOptimizeDisplay(true)
-                        imageView.setProgressIndicator(ProgressPieIndicator())
-                        imageView.showImage(Uri.parse(mImageList.get(index)))
+            /*if (position > container.childCount) {
+                for (index in container.childCount until mImageList.size) {
+                    val imageView = BigImageView(mContext)
+                    imageView.setFailureImage(getDrawable(mContext,R.drawable.broken_image))
+                    imageView.setTapToRetry(true)
+                    imageView.setOptimizeDisplay(true)
+                    imageView.setProgressIndicator(ProgressPieIndicator())
+                    imageView.showImage(Uri.parse(mImageList.get(index)))
 
-                        container.addView(imageView, index)
-                        imageView.setOnClickListener {
-                            onViewPagerClickListener.onClick()
-                        }
-                    }
-                } else {*/
-                    imageView.showImage(Uri.parse(mImageList.get(position).toString()))
-                    container.addView(imageView)
-
+                    container.addView(imageView, index)
                     imageView.setOnClickListener {
                         onViewPagerClickListener.onClick()
                     }
+                }
+            } else {*/
+            imageView.showImage(Uri.parse(mImageList.get(position).toString()))
+            container.addView(imageView)
 
-                //}
-                return imageView
-           /* } else {
-                return container.getChildAt(position)
-            }*/
+            imageView.setOnClickListener {
+                onViewPagerClickListener.onClick()
+            }
+
+            //}
+            return imageView
+            /* } else {
+                 return container.getChildAt(position)
+             }*/
         }
     }
 

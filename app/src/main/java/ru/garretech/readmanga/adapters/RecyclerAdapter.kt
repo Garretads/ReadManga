@@ -9,7 +9,8 @@ import com.chad.library.adapter.base.BaseViewHolder
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.models.Manga
 
-class RecyclerAdapter(layoutResId: Int, data: List<Manga>?) : BaseQuickAdapter<Manga, BaseViewHolder>(layoutResId, data) {
+class RecyclerAdapter(layoutResId: Int, data: List<Manga>?) :
+    BaseQuickAdapter<Manga, BaseViewHolder>(layoutResId, data) {
 
     override fun addData(data: Manga) {
         synchronized(this) {
@@ -35,7 +36,6 @@ class RecyclerAdapter(layoutResId: Int, data: List<Manga>?) : BaseQuickAdapter<M
         data.clear()
         notifyDataSetChanged()
     }
-
 
 
     override fun convert(helper: BaseViewHolder, item: Manga) {

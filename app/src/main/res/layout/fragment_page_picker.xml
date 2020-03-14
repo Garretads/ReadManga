@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-             android:background="@color/colorPrimaryDark"
-                tools:context=".fragments.PagePickerFragment">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        tools:context=".ui.reader.PagePickerFragment">
+
     <com.shawnlin.numberpicker.NumberPicker
-            android:layout_width="200dp" android:layout_height="150dp"
-            android:id="@+id/pagePicker" android:layout_gravity="center"
-            style="@style/Base.Theme.AppCompat.Dialog" app:np_textColor="@color/colorPrimary"
-            app:np_selectedTextColor="@android:color/white" app:np_dividerColor="@color/black_overlay"
-            android:background="@android:color/transparent">
+            android:id="@+id/pagePicker"
+            style="@style/Base.Theme.AppCompat.Dialog"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            app:np_dividerColor="@color/black_overlay"
+            app:np_selectedTextColor="@android:color/white"
+            app:np_textColor="@color/colorPrimary">
 
     </com.shawnlin.numberpicker.NumberPicker>
 </FrameLayout>

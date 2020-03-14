@@ -86,7 +86,7 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="multi_select_list_preference_default_value"/>
+    <string-array name="multi_select_list_preference_default_value" />
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
@@ -113,5 +113,5 @@
         сайта readmanga.me.
     </string>
 
-    <string name="changelog">Изменения в 1.1.3: Исправлен нерабочий поиск. Добавлена экспериментальная кнопка перехода к ранее просмотренной главе</string>
+    <string name="changelog">Изменения в 1.1.6: 1) Исправлен вылет приложения сразу после запуска на android 4.4</string>
 </resources>

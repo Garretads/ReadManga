@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                                   android:orientation="horizontal"
-                                   android:layout_width="match_parent"
-                                   android:layout_height="wrap_content"
-                                   android:background="@color/colorPrimaryDark"
-                                   android:padding="5dp"
-                                   android:clickable="true"
-                                   android:focusable="true"
-                                   android:foreground="?android:attr/selectableItemBackground"
-                                   android:layout_margin="2dp"
-                                   app:cardCornerRadius="5dp" app:cardBackgroundColor="#292929"
-                                   app:cardElevation="2dp">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:background="@color/colorPrimaryDark"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:cardBackgroundColor="#292929"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="2dp">
 
     <LinearLayout
             android:layout_width="match_parent"

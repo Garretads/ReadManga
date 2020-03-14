@@ -1,21 +1,16 @@
-package ru.garretech.readmanga.fragments
+package ru.garretech.readmanga.ui.reader
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.shawnlin.numberpicker.NumberPicker
-
 import ru.garretech.readmanga.R
 
 
-
 class PagePickerFragment : BottomSheetDialogFragment() {
-    // TODO: Rename and change types of parameters
     private var currentPage: Int? = null
     private var maxPages: Int? = null
     private var listener: OnNumberPickedListener? = null
@@ -28,7 +23,11 @@ class PagePickerFragment : BottomSheetDialogFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_page_picker, container, false)
         //view.setBackgroundResource(android.R.color.transparent)

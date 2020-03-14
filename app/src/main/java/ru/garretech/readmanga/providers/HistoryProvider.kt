@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.tools
+package ru.garretech.readmanga.providers
 
 import ru.garretech.readmanga.models.History
 
@@ -12,25 +12,23 @@ class HistoryProvider(val history: History) {
 
 
     fun getWatchedChaptersInVolume(volumeIndex: Int) : List<Int> {
-        if (history.chapters!!.containsKey(volumeIndex)) {
-            val indexes = history.chapters!![volumeIndex]
-            return indexes!!
-        }
-        else {
-            return emptyList()
+        return if (history.chapters!!.containsKey(volumeIndex)) {
+            history.chapters!![volumeIndex]!!
+        } else {
+            emptyList()
         }
     }
 
-    fun getWatchedVolumeIndexes() : List<Int> {
+    fun getWatchedVolumeNumbers() : List<Int> {
         return if (history.chapters != null)
             history.chapters!!.keys.toList()
         else
-            emptyList<Int>()
+            emptyList()
     }
 
     fun addChapter(volumeIndex : Int, chapterIndex : Int) {
         if (history.chapters!!.containsKey(volumeIndex)) {
-            val idArray = history.chapters!!.get(volumeIndex)!!
+            val idArray = history.chapters!![volumeIndex]!!
             val newArray = ArrayList<Int>()
             newArray.addAll(idArray)
 

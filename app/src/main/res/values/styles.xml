@@ -16,9 +16,9 @@
         <item name="android:listDivider">@drawable/line_divider</item>
     </style>
 
-    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
     <style name="AppSearchViewStyle" parent="Widget.AppCompat.SearchView">

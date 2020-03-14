@@ -1,31 +1,25 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.mangaInfo
 
 import android.content.Intent
-import com.google.android.material.tabs.TabLayout
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
-import io.reactivex.Single
-
+import com.google.android.material.tabs.TabLayout
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-
 import kotlinx.android.synthetic.main.activity_manga_info.*
-import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.R
+import ru.garretech.readmanga.ui.settings.SettingsActivity
 import ru.garretech.readmanga.adapters.MovieAboutPagerAdapter
 import ru.garretech.readmanga.database.AppDataSource
-import ru.garretech.readmanga.fragments.MangaAboutFragment
-import ru.garretech.readmanga.fragments.MangaEpisodesFragment
 import ru.garretech.readmanga.models.Manga
-import ru.garretech.readmanga.tools.SiteWorker
-import ru.garretech.readmanga.viewmodels.MangaInfoActivityViewModel
+import ru.garretech.readmanga.providers.SiteContentProvider
 
 class MangaInfoActivity : AppCompatActivity() {
 
@@ -39,7 +33,7 @@ class MangaInfoActivity : AppCompatActivity() {
 
     internal lateinit var mFragmentAdapter: MovieAboutPagerAdapter
     lateinit var viewModel: MangaInfoActivityViewModel
-    var isRandom : Boolean = true
+    var isRandom: Boolean = true
 
     internal lateinit var currentManga: Manga
     internal lateinit var dataSource: AppDataSource
@@ -54,46 +48,29 @@ class MangaInfoActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this).get(MangaInfoActivityViewModel::class.java)
         showProgressCircle()
 
-        isRandom = intent.getBooleanExtra("is_random",true)
+        isRandom = intent.getBooleanExtra("is_random", true)
 
-        var url : String = if (isRandom) {
-            SiteWorker.RANDOM_MOVIE_PREFIX
+        var url: String = if (isRandom) {
+            SiteContentProvider.RANDOM_MOVIE_PREFIX
         } else {
             intent.getStringExtra("manga_url")!!
         }
 
-        DisposableManager.add(viewModel
-            .getMangaFromDatabase(url)
-            .flatMap {
-                if (it.description == null)
-                    viewModel.getMangaInfo(url)
-                else
-                    Single.just(it)
-            }
-            .subscribe( { manga ->
-                prepareManga(manga)
-            },{
-                viewModel.getMangaInfo(url)
-                    .subscribe( { manga ->
-                        viewModel.addManga(manga).subscribe({
-                            prepareManga(manga)
-                        },{
-                            Log.e("MangaInfoActivity","Ошибка сохранения манги в БД", it)
-                            dismissProgressCircle()
-                        })
-                },{
-                    Log.e("MANGA INFO OBSERVER","Ошибка получения информации о манге", it)
-                })
-            })
-        )
+        viewModel.getMangaInfo(url) { prepareManga(it) }
     }
 
 
     private fun setupViewPager(viewPager: androidx.viewpager.widget.ViewPager) {
         mFragmentAdapter = MovieAboutPagerAdapter(supportFragmentManager)
 
-        mFragmentAdapter.addFragment(MangaAboutFragment.newInstance(viewModel.currentManga!!), "О манге")
-        mFragmentAdapter.addFragment(MangaEpisodesFragment.newInstance(viewModel.currentManga!!), "Эпизоды")
+        mFragmentAdapter.addFragment(
+            MangaAboutFragment.newInstance(viewModel.currentManga!!),
+            "О манге"
+        )
+        mFragmentAdapter.addFragment(
+            MangaEpisodesFragment.newInstance(viewModel.currentManga!!),
+            "Эпизоды"
+        )
         viewPager.adapter = mFragmentAdapter
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -123,7 +100,7 @@ class MangaInfoActivity : AppCompatActivity() {
     }
 
     fun prepareManga(manga: Manga) {
-        viewModel.addManga(manga).subscribe( {
+        viewModel.addManga(manga) {
             title = ""
 
             setupViewPager(viewPager)
@@ -132,10 +109,7 @@ class MangaInfoActivity : AppCompatActivity() {
             viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
             tabLayout.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(viewPager))
             dismissProgressCircle()
-        },{
-            Log.e("MangaInfoActivity","Ошибка сохранения манги в БД", it)
-            dismissProgressCircle()
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -145,14 +119,14 @@ class MangaInfoActivity : AppCompatActivity() {
 
 
         disposable = observable
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { t -> flagFavorite(t) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { t -> flagFavorite(t) }
 
         viewModel.isInFavorite.subscribe(
             { isInFavorite ->
                 emmitFavorite(isInFavorite)
-            },{
-                Log.e("MangaInfoActivity","Ошибка проверки манги в избранном",it)
+            }, {
+                Log.e("MangaInfoActivity", "Ошибка проверки манги в избранном", it)
             })
 
         return true
@@ -166,20 +140,28 @@ class MangaInfoActivity : AppCompatActivity() {
             R.id.action_favorite -> {
                 if (viewModel.isFavorite) {
                     viewModel.deleteFavorites
-                    .subscribe( {
-                        emmitFavorite(false)
-                        Log.d("MangaInfoActivity","Удаление из избранного успешно")
-                    },{
-                        Log.e("MangaInfoActivity","Удаление из избранного завершилось с ошибкой",it)
-                    })
+                        .subscribe({
+                            emmitFavorite(false)
+                            Log.d("MangaInfoActivity", "Удаление из избранного успешно")
+                        }, {
+                            Log.e(
+                                "MangaInfoActivity",
+                                "Удаление из избранного завершилось с ошибкой",
+                                it
+                            )
+                        })
                 } else {
                     viewModel.addFavorites
-                    .subscribe( {
-                        emmitFavorite(true)
-                        Log.d("MangaInfoActivity","Добавление в избранное успешно")
-                    },{
-                        Log.e("MangaInfoActivity","Добавление в избранное завершилось ошибкой",it)
-                    })
+                        .subscribe({
+                            emmitFavorite(true)
+                            Log.d("MangaInfoActivity", "Добавление в избранное успешно")
+                        }, {
+                            Log.e(
+                                "MangaInfoActivity",
+                                "Добавление в избранное завершилось ошибкой",
+                                it
+                            )
+                        })
                 }
             }
             R.id.action_settings -> {

@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.viewpager.widget.ViewPager
 
-class MangaViewPager(context : Context, attr : AttributeSet?) : ViewPager(context,attr) {
+class MangaViewPager(context: Context, attr: AttributeSet?) : ViewPager(context, attr) {
 
     override fun onInterceptTouchEvent(ev: MotionEvent?) =
         try {

@@ -1,16 +1,17 @@
 package ru.garretech.readmanga.models
 
-import androidx.room.*
 import android.graphics.Bitmap
+import androidx.room.*
 import ru.garretech.readmanga.tools.ListConverter
 import java.io.Serializable
 
 @Entity
 class Manga
-
-    (var title: String?, @field:ColumnInfo(name = "manga_image_url")
-     var mangaImageURL: String, @field:PrimaryKey
-     var url: String) : Serializable {
+    (
+    var title: String?, @field:ColumnInfo(name = "manga_image_url")
+var mangaImageURL: String, @field:PrimaryKey
+    var url: String
+) : Serializable {
 
     @ColumnInfo(name = "production_year")
     var productionYear: String? = null
@@ -39,7 +40,6 @@ class Manga
 
     @ColumnInfo(name = "initial_episode")
     var lastChapter: String? = null
-
 
 
 }

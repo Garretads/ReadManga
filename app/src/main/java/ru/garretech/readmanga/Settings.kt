@@ -9,7 +9,6 @@ object Settings {
     const val VERSION_CODE = "version_code"
 
 
-
     fun max_loaded_in_screen(): Int {
         return max_loaded_in_screen
     }

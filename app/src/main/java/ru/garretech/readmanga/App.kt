@@ -16,9 +16,16 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         BigImageViewer.initialize(GlideImageLoader.with(applicationContext))
-        val crashlyticsKit = Crashlytics.Builder().core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()).build()
+        val crashlyticsKit = Crashlytics.Builder()
+            .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()).build()
         if (!BuildConfig.DEBUG) Fabric.with(baseContext, crashlyticsKit)
-        if (!BuildConfig.DEBUG) RxJavaPlugins.setErrorHandler { t: Throwable? -> Log.e("RxJava error","Произошла ошибка",t) }
+        if (!BuildConfig.DEBUG) RxJavaPlugins.setErrorHandler { t: Throwable? ->
+            Log.e(
+                "RxJava error",
+                "Произошла ошибка",
+                t
+            )
+        }
     }
 
     override fun attachBaseContext(base: Context?) {

@@ -3,7 +3,8 @@ package ru.garretech.readmanga.models
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import java.io.Serializable
 
-class Chapter(name : String, val chapterNumber : Int, val volumeNumber: Int, val link : String) : MultiItemEntity, Serializable {
+class Chapter(name: String, val chapterNumber: Int, val volumeNumber: Int, val link: String) :
+    MultiItemEntity, Serializable {
     override fun getItemType(): Int {
         return TYPE
     }

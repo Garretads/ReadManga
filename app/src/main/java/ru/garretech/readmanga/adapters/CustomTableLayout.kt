@@ -8,14 +8,18 @@ import android.widget.TableLayout
 import android.widget.TableRow
 
 
-class CustomTableLayout(context: Context,attrs: AttributeSet) :TableLayout(context,attrs), View.OnClickListener {
-    private var activeRadioButton:RadioButton? = null
-    var activeRadioButtonIndex : Int = -1
+class CustomTableLayout(context: Context, attrs: AttributeSet) : TableLayout(context, attrs),
+    View.OnClickListener {
+    private var activeRadioButton: RadioButton? = null
+    var activeRadioButtonIndex: Int = -1
     private var rbList = ArrayList<RadioButton>()
 
-    val checkedRadioButtonId:Int get() = if (activeRadioButton != null) { activeRadioButton!!.id } else -1
+    val checkedRadioButtonId: Int
+        get() = if (activeRadioButton != null) {
+            activeRadioButton!!.id
+        } else -1
 
-    fun checkChildAt(position : Int) {
+    fun checkChildAt(position: Int) {
         var rb = rbList.get(position)
         rb.isChecked = true
         activeRadioButton = rb
@@ -33,19 +37,19 @@ class CustomTableLayout(context: Context,attrs: AttributeSet) :TableLayout(conte
     }
 
 
-     override fun addView(child:View, index:Int, params:android.view.ViewGroup.LayoutParams) {
+    override fun addView(child: View, index: Int, params: android.view.ViewGroup.LayoutParams) {
         super.addView(child, index, params)
         setChildrenOnClickListener(child as TableRow)
     }
 
 
-     override fun addView(child:View, params:android.view.ViewGroup.LayoutParams) {
+    override fun addView(child: View, params: android.view.ViewGroup.LayoutParams) {
         super.addView(child, params)
         setChildrenOnClickListener(child as TableRow)
     }
 
 
-    private fun setChildrenOnClickListener(tr:TableRow) {
+    private fun setChildrenOnClickListener(tr: TableRow) {
         val c = tr.childCount
         for (i in 0 until c) {
             val v = tr.getChildAt(i)

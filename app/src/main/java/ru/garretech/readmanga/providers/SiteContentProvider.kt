@@ -1,15 +1,13 @@
-package ru.garretech.readmanga.tools
+package ru.garretech.readmanga.providers
 
 import android.content.Context
 import android.net.Uri
 import com.chad.library.adapter.base.entity.MultiItemEntity
-
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -21,14 +19,12 @@ import ru.garretech.readmanga.Settings
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.models.Volume
-
+import ru.garretech.readmanga.tools.PageDownloader
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.concurrent.ExecutionException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 /*
 * Класс для работы с сайтом
@@ -37,7 +33,7 @@ import kotlin.collections.HashMap
 * В отдельном методе формируется список фильмов editorChoice
 *
 * */
-class SiteWorker {
+class SiteContentProvider {
 
     inner class RequestQuery {
         private var requestType: Int = 0
@@ -61,8 +57,10 @@ class SiteWorker {
             get() = if (queryAmount == -1 || currentOffset < queryAmount) {
                 when (requestType) {
                     SIMPLE_QUERY -> {
-                        val pageDownloader = PageDownloader()
-                        uriQuery = standartUri
+                        val pageDownloader =
+                            PageDownloader()
+                        uriQuery =
+                            standartUri
 
                         if (path!!.contains("/")) {
                             val pathArray =
@@ -87,9 +85,17 @@ class SiteWorker {
                         if (pageContent != null) {
 
                             if (queryAmount == -1)
-                                queryAmount = getMaxQueryElementCount(pageContent)
+                                queryAmount =
+                                    getMaxQueryElementCount(
+                                        pageContent
+                                    )
 
-                            val result = mangaListContentParse(context, pageContent, limit)
+                            val result =
+                                mangaListContentParse(
+                                    context,
+                                    pageContent,
+                                    limit
+                                )
 
                             val resultArray = result["list"] as List<Manga>
                             list?.addAll(resultArray)
@@ -103,25 +109,35 @@ class SiteWorker {
                     SEARCH_QUERY -> {
                         val client = OkHttpClient()
 
-                        uriQuery = standartUri
+                        uriQuery =
+                            standartUri
                         uriQuery!!.appendPath(path)
 
                         parameters!![OFFSET_PARAM] = currentOffset.toString()
 
-                        val request = searchRequest(
-                            uriQuery!!.toString(),
-                            parameters!!["q"],
-                            parameters!![OFFSET_PARAM]
-                        )
+                        val request =
+                            searchRequest(
+                                uriQuery!!.toString(),
+                                parameters!!["q"],
+                                parameters!![OFFSET_PARAM]
+                            )
 
                         val response = client.newCall(request).execute()
 
                         val pageContent = Jsoup.parse(response.body()?.string())
 
                         if (queryAmount == -1)
-                            queryAmount = getMaxSearchElementCount(pageContent)
+                            queryAmount =
+                                getMaxSearchElementCount(
+                                    pageContent
+                                )
 
-                        val result = mangaListContentParse(context, pageContent, limit)
+                        val result =
+                            mangaListContentParse(
+                                context,
+                                pageContent,
+                                limit
+                            )
 
                         val resultArray = result["list"] as List<Manga>
                         list?.addAll(resultArray)
@@ -133,7 +149,9 @@ class SiteWorker {
                     EDITOR_CHOICE_QUERY -> {
                         queryAmount = 5
                         currentOffset = 5
-                        getEditorChoiceMangasList(context).let {
+                        getEditorChoiceMangasList(
+                            context
+                        ).let {
                             list = ArrayList(); list?.addAll(it); Observable.fromArray(it)
                         }
                     }
@@ -290,7 +308,8 @@ class SiteWorker {
             Single.create<JSONArray> {
                 val genresList = JSONArray()
                 val URL_PREFIX = "/list/genres/sort_name"
-                val pageDownloader = PageDownloader()
+                val pageDownloader =
+                    PageDownloader()
                 val pageContent: Document?
 
                 pageContent = pageDownloader.execute(SITE_URL + URL_PREFIX).get()
@@ -349,7 +368,7 @@ class SiteWorker {
             if (matcher.find())
                 resultAmount = matcher.group(1)
 
-            resultAmount = resultAmount.substring(0, resultAmount.lastIndexOf("]") + 1)
+            resultAmount = resultAmount.substring(0, resultAmount.lastIndexOf("]") + 1).replace("manga/","")
 
             //val pageCount = pageContent.getElementsByClass("pages-count")?.first()?.text()
             //var imageUrl = pageContent.getElementById("fotocontext").getElementsByTag("img").attr("src")
@@ -396,7 +415,8 @@ class SiteWorker {
         fun getMangaInfo(URL: String) =
             Single.create<Manga> {
                 val info = JSONObject()
-                val pageDownloader = PageDownloader()
+                val pageDownloader =
+                    PageDownloader()
                 val pageContent: Document?
                 var name = ""
                 var eng_name = ""
@@ -678,7 +698,8 @@ class SiteWorker {
                 val patternChapterName = Pattern.compile("\\s\\w*\\s(.*\$)")
                 val ADULT_PREFIX = "?mtr=1"
                 val adapterList: ArrayList<MultiItemEntity> = ArrayList<MultiItemEntity>()
-                val pageDownloader = PageDownloader()
+                val pageDownloader =
+                    PageDownloader()
                 val pageContent: Document?
                 //var doesntHaveNumberInTitle = false
 
@@ -717,50 +738,50 @@ class SiteWorker {
                             }
                         //if (matcher.find()) {
 
-                            if (volumeIndex != currentVolumeIndex) {
-                                if (currentVolume != null)
-                                    adapterList.add(currentVolume)
+                        if (volumeIndex != currentVolumeIndex) {
+                            if (currentVolume != null)
+                                adapterList.add(currentVolume)
 
-                                currentVolume = Volume(currentVolumeIndex)
-                                volumeIndex = currentVolumeIndex
-                            }
-
-
-                            val chapterNumber = index
-                            var link = element1.attr("value")
-                            link = link.substring(URL.length)
-
-                            matcher = pattern.matcher(element1.text())
-
-                            var chapterName =
-                                if (matcher.find()) {
-                                    var chapter = element1.text().substring(element1.text().lastIndexOf("- ") + 3)
-                                    chapter = chapter.substring(chapter.indexOf(" ") + 1)
-                                    chapter
-                                }
-                                else
-                                    element1.text()
+                            currentVolume = Volume(currentVolumeIndex)
+                            volumeIndex = currentVolumeIndex
+                        }
 
 
-                            /*if (matcher.find())
-                                chapterName = matcher.group(1)
-                            else
-                                chapterName = element1.text()*/
+                        val chapterNumber = index
+                        var link = element1.attr("value")
+                        link = link.substring(URL.length)
 
-                            var currentChapter =
-                                Chapter(chapterName, chapterNumber, currentVolumeIndex, link)
+                        matcher = pattern.matcher(element1.text())
 
-                            currentVolume?.addSubItem(currentChapter)
+                        var chapterName =
+                            if (matcher.find()) {
+                                var chapter =
+                                    element1.text().substring(element1.text().lastIndexOf("- ") + 3)
+                                chapter = chapter.substring(chapter.indexOf(" ") + 1)
+                                chapter
+                            } else
+                                element1.text()
 
-                            val jsonObject = JSONObject()
 
-                            jsonObject.put("chapterName", chapterName)
-                            jsonObject.put("chapterNumber", chapterNumber)
-                            jsonObject.put("volumeNumber", currentVolumeIndex)
-                            jsonObject.put("link", link)
-                            chaptersList.put(index, jsonObject)
-                            index++
-                       // }
+                        /*if (matcher.find())
+                            chapterName = matcher.group(1)
+                        else
+                            chapterName = element1.text()*/
+
+                        var currentChapter =
+                            Chapter(chapterName, chapterNumber, currentVolumeIndex, link)
+
+                        currentVolume?.addSubItem(currentChapter)
+
+                        val jsonObject = JSONObject()
+
+                        jsonObject.put("chapterName", chapterName)
+                        jsonObject.put("chapterNumber", chapterNumber)
+                        jsonObject.put("volumeNumber", currentVolumeIndex)
+                        jsonObject.put("link", link)
+                        chaptersList.put(index, jsonObject)
+                        index++
+                        // }
                     }
                     if (currentVolume != null && volumeIndex != 0)
                         adapterList.add(currentVolume)

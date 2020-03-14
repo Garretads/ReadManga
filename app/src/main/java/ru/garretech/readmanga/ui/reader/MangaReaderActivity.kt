@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.reader
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.widget.ViewPager2
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -18,11 +17,8 @@ import org.json.JSONObject
 import ru.garretech.readmanga.DisposableManager
 import ru.garretech.readmanga.interfaces.OnViewPagerClickListener
 import ru.garretech.readmanga.R
-import ru.garretech.readmanga.adapters.ImageRecyclerAdapter
 import ru.garretech.readmanga.adapters.ImageScrollAdapter
-import ru.garretech.readmanga.fragments.PagePickerFragment
-import ru.garretech.readmanga.tools.SiteWorker
-import ru.garretech.readmanga.viewmodels.MangaReaderActivityViewModel
+import ru.garretech.readmanga.providers.SiteContentProvider
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -174,14 +170,16 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
             .subscribeOn(Schedulers.io())
             .subscribe({ jsonArray ->
 
-                val imageList = ArrayList<String>()
+                var imageList = ArrayList<String>()
 
                 for (index in 0 until jsonArray.length()) {
                     val jsonTemp = jsonArray.getJSONArray(index)
-                    val link = jsonTemp.get(1).toString() + jsonTemp.get(2).toString()
+
+                    val link = jsonTemp.get(0).toString() + jsonTemp.get(2).toString()
 
                     imageList.add(link)
                 }
+
 
                 //adapterNew.addAll(imageList)
                 adapter = ImageScrollAdapter(this,imageList)
@@ -231,7 +229,7 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
 
     private fun getPhotosRequestSingle(url: String) : Single<JSONArray> {
         return Single.create { observer ->
-            val jsonArray = SiteWorker.getMangaImageList(url)
+            val jsonArray = SiteContentProvider.getMangaImageList(url)
             observer.onSuccess(jsonArray)
         }
     }
@@ -260,12 +258,10 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
 
             viewModel.historyProvider.addChapter(newChapter.getString("volumeNumber").toInt(),newChapter.getString("chapterNumber").toInt())
 
-            viewModel.addToHistory().subscribe({
+            viewModel.addToHistory {
                 title = chapterName
                 prepareImageSet(mangaURL, newChapter.getString("link"))
-            },{
-                Log.e("MangaReaderActivity", "Ошибка сохранения истории", it)
-            })
+            }
 
         }
     }
@@ -282,12 +278,10 @@ class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PageP
 
             viewModel.historyProvider.addChapter(newChapter.getString("volumeNumber").toInt(),newChapter.getString("chapterNumber").toInt())
 
-            viewModel.addToHistory().subscribe({
+            viewModel.addToHistory {
                 title = chapterName
                 prepareImageSet(mangaURL, newChapter.getString("link"))
-            },{
-                Log.e("MangaReaderActivity", "Ошибка сохранения истории", it)
-            })
+            }
 
         }
     }

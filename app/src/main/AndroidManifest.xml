@@ -31,37 +31,38 @@
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:usesCleartextTraffic="true">
         <activity
-                android:name=".activities.MangaReaderActivity"
+                android:name=".ui.reader.MangaReaderActivity"
                 android:configChanges="orientation|keyboardHidden|screenSize"
                 android:label="@string/title_activity_manga_reader"
                 android:theme="@style/FullscreenTheme">
         </activity>
         <activity
-                android:name=".activities.SettingsActivity"
+                android:name=".ui.settings.SettingsActivity"
                 android:label="@string/title_activity_settings"
-                android:parentActivityName=".activities.MainActivity">
+                android:parentActivityName=".ui.main.MainActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="ru.garretech.readmanga.activities.MainActivity"/>
+                    android:value="ru.garretech.readmanga.ui.main.MainActivity"/>
         </activity>
-        <activity android:name=".activities.AboutApplicationActivity"/>
+        <activity android:name=".ui.about.AboutApplicationActivity"/>
         <activity
-                android:name=".activities.GenresActivity"
+                android:name=".ui.genres.GenresActivity"
                 android:label="@string/title_activity_genres"
-                android:parentActivityName=".activities.MainActivity">
+                android:parentActivityName=".ui.main.MainActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="ru.garretech.readmanga.activities.MainActivity"/>
+                    android:value="ru.garretech.readmanga.ui.main.MainActivity"/>
         </activity>
         <activity
-                android:name=".activities.MangaInfoActivity"
+                android:name=".ui.mangaInfo.MangaInfoActivity"
+                android:theme="@style/Theme.AppCompat.NoActionBar"
                 android:label="@string/title_activity_movie_about"
-                android:parentActivityName=".activities.MainActivity">
+                android:parentActivityName=".ui.main.MainActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="ru.garretech.readmanga.activities.MainActivity"/>
+                    android:value="ru.garretech.readmanga.ui.main.MainActivity"/>
         </activity>
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

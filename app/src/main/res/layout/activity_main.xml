@@ -6,18 +6,20 @@
         android:id="@+id/relativeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.MainActivity"
+        tools:context=".ui.main.MainActivity"
         android:background="?attr/colorPrimary">
 
 
-    <include layout="@layout/toolbar"/>
+    <include
+            android:id="@+id/mainAppbar"
+            layout="@layout/toolbar"/>
 
 
     <androidx.drawerlayout.widget.DrawerLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/drawerLayout"
-            android:layout_below="@+id/toolbarActionBar">
+            android:layout_below="@+id/mainAppbar">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipeContainer"

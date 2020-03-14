@@ -1,25 +1,22 @@
-package ru.garretech.readmanga.activities
+package ru.garretech.readmanga.ui.genres
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
-
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_genres.*
+import kotlinx.android.synthetic.main.toolbar.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-
-import java.util.ArrayList
-
-import kotlinx.android.synthetic.main.activity_genres.*
-import kotlinx.android.synthetic.main.toolbar.*
 import ru.garretech.readmanga.R
+import java.util.*
 
 class GenresActivity : AppCompatActivity() {
     private var genresArray: JSONArray? = null
@@ -45,10 +42,14 @@ class GenresActivity : AppCompatActivity() {
                 genresNameList.add(name.substring(0, 1).toUpperCase() + name.substring(1))
             }
 
-            val arrayAdapter = object : ArrayAdapter<String>(applicationContext, android.R.layout.simple_list_item_1,genresNameList) {
+            val arrayAdapter = object : ArrayAdapter<String>(
+                applicationContext,
+                android.R.layout.simple_list_item_1,
+                genresNameList
+            ) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent)
-                    val text : TextView = view.findViewById(android.R.id.text1)
+                    val text: TextView = view.findViewById(android.R.id.text1)
                     text.setTextColor(resources.getColor(android.R.color.white))
                     return view
                 }

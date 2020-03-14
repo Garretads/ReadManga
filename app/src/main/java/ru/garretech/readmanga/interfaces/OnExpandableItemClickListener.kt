@@ -4,5 +4,5 @@ import ru.garretech.readmanga.models.Chapter
 
 interface OnExpandableItemClickListener {
 
-    fun onChapterClick(item : Chapter)
+    fun onChapterClick(item: Chapter)
 }
