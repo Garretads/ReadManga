@@ -113,5 +113,5 @@
         сайта readmanga.me.
     </string>
 
-    <string name="changelog">Изменения в 1.1.5: 1) Исправлен вылет приложения сразу после запуска на android 4.4</string>
+    <string name="changelog">Изменения в 1.1.6: 1) Исправлен вылет приложения сразу после запуска на android 4.4</string>
 </resources>
