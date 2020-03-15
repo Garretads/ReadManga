@@ -8,6 +8,12 @@ object Settings {
     const val MYTARGET_ID = 618375
     const val VERSION_CODE = "version_code"
 
+    const val READMANGA_URL = "https://readmanga.me"
+    const val READMANGA_NAME = "readmanga.me"
+
+    const val MINTMANGA_URL = "https://readmanga.me"
+    const val MINTMANGA_NAME = "readmanga.me"
+
 
     fun max_loaded_in_screen(): Int {
         return max_loaded_in_screen

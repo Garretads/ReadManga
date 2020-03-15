@@ -1,0 +1,13 @@
+<resources>
+
+    <string-array name="source_entries">
+        <item>readmanga.me</item>
+        <item>mintmanga.com</item>
+    </string-array>
+
+    <string-array name="source_values">
+        <item>readmanga.me</item>
+        <item>mintmanga.com</item>
+    </string-array>
+
+</resources>

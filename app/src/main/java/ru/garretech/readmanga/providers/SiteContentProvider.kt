@@ -16,6 +16,8 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import ru.garretech.readmanga.Settings
+import ru.garretech.readmanga.Settings.READMANGA_NAME
+import ru.garretech.readmanga.Settings.READMANGA_URL
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.models.Volume
@@ -226,8 +228,6 @@ class SiteContentProvider {
     }
 
     companion object {
-        val SITE_URL = "https://readmanga.me"
-        private val SITE_NAME = "readmanga.me"
         private val editorChoice = "row tiles-row short"
         val NEW_MOVIES_PARAMS = arrayOf("sortType", "created")
         val LIST_PREFIX = "list"
@@ -272,7 +272,7 @@ class SiteContentProvider {
             val pageDownloader = PageDownloader()
             val pageContent: Document?
             val movieList = ArrayList<Manga>()
-            pageContent = pageDownloader.execute(SITE_URL).get()
+            pageContent = pageDownloader.execute(READMANGA_URL).get()
             var movie: Manga
 
             if (pageContent == null)
@@ -312,7 +312,7 @@ class SiteContentProvider {
                     PageDownloader()
                 val pageContent: Document?
 
-                pageContent = pageDownloader.execute(SITE_URL + URL_PREFIX).get()
+                pageContent = pageDownloader.execute(READMANGA_URL + URL_PREFIX).get()
 
                 if (pageContent == null)
                     throw NullPointerException()
@@ -358,7 +358,7 @@ class SiteContentProvider {
                     JSONArray()
             }
 
-            pageContent = pageDownloader.execute(SITE_URL + link).get()
+            pageContent = pageDownloader.execute(READMANGA_URL + link).get()
 
             if (pageContent == null)
                 return jsonArray
@@ -428,7 +428,7 @@ class SiteContentProvider {
                 var age = ""
                 var production = ""
 
-                pageContent = pageDownloader.execute(SITE_URL + URL).get()
+                pageContent = pageDownloader.execute(READMANGA_URL + URL).get()
 
                 if (pageContent == null) {
                     throw NullPointerException()
@@ -709,7 +709,7 @@ class SiteContentProvider {
                     }
 
                     pageContent =
-                        pageDownloader.execute(SITE_URL + URL + lastChapter + ADULT_PREFIX).get()
+                        pageDownloader.execute(READMANGA_URL + URL + lastChapter + ADULT_PREFIX).get()
 
                     if (pageContent == null)
                         it.onError(NullPointerException())
@@ -809,7 +809,7 @@ class SiteContentProvider {
             get() {
                 val builder = Uri.Builder()
                 builder.scheme("https")
-                    .authority(SITE_NAME)
+                    .authority(READMANGA_NAME)
                 return builder
             }
 
