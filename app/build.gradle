@@ -8,7 +8,7 @@ apply plugin: 'com.google.gms.google-services'
 android {
     signingConfigs {
         release {
-            storeFile file('/Users/sergei/readmanga_key')
+            storeFile file('C:\\Android\\AndroidProjects\\readmanga_key')
             storePassword 'B324xw'
             keyAlias = 'key0'
             keyPassword 'B324xw'
@@ -29,8 +29,8 @@ android {
         applicationId "ru.garretech.readmanga"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 19
-        versionName "1.1.6"
+        versionCode 20
+        versionName "1.1.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         signingConfig signingConfigs.release
