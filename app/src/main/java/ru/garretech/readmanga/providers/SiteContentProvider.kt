@@ -16,6 +16,8 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import ru.garretech.readmanga.Settings
+import ru.garretech.readmanga.Settings.SITE_NAME
+import ru.garretech.readmanga.Settings.SITE_URL
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.models.Volume
@@ -226,8 +228,6 @@ class SiteContentProvider {
     }
 
     companion object {
-        val SITE_URL = "https://readmanga.me"
-        private val SITE_NAME = "readmanga.me"
         private val editorChoice = "row tiles-row short"
         val NEW_MOVIES_PARAMS = arrayOf("sortType", "created")
         val LIST_PREFIX = "list"

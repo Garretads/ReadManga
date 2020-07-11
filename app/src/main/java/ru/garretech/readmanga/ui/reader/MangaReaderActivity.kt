@@ -27,7 +27,7 @@ import ru.garretech.readmanga.providers.SiteContentProvider
 class MangaReaderActivity : AppCompatActivity(), OnViewPagerClickListener, PagePickerFragment.OnNumberPickedListener {
 
     val chapterJsonArray : JSONArray by lazy { JSONArray(intent.getStringExtra("chapterArray")) }
-    val mangaURL : String by lazy { intent.getStringExtra("mangaURL") }
+    val mangaURL : String by lazy { intent.getStringExtra("mangaURL") ?: "" }
     var selectedChapterIndex = 0
     lateinit var mMenu : Menu
     lateinit var adapter: ImageScrollAdapter

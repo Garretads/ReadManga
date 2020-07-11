@@ -45,6 +45,7 @@ import ru.garretech.readmanga.fragments.ConfirmationFragment
 import ru.garretech.readmanga.fragments.CustomLoadMoreView
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.providers.SiteContentProvider
+import java.lang.IllegalArgumentException
 import java.util.*
 
 class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
@@ -469,17 +470,24 @@ class MainActivity : AppCompatActivity(), BaseQuickAdapter.OnItemClickListener,
 
         if (requestCode == GENRES_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                val resultPrefix = data!!.getStringExtra("link")
-                val genreName = data.getStringExtra("name")
 
-                showProgressBar()
+                try {
+                    val resultPrefix = requireNotNull(data?.getStringExtra("link"))
+                    val genreName = requireNotNull(data?.getStringExtra("name"))
 
-                changeState(ACTIVITY_STATE.MOVIE_LIST)
+                    showProgressBar()
 
-                viewModel.getRequestQueryCompletable(SiteContentProvider.SIMPLE_QUERY, resultPrefix)
-                    .subscribe(getMangaListObserver)
+                    changeState(ACTIVITY_STATE.MOVIE_LIST)
 
-                title = genreName.substring(0, 1).toUpperCase() + genreName.substring(1)
+                    viewModel.getRequestQueryCompletable(SiteContentProvider.SIMPLE_QUERY, resultPrefix)
+                        .subscribe(getMangaListObserver)
+
+                    title = genreName.substring(0, 1).toUpperCase() + genreName.substring(1)
+
+                } catch (e: IllegalArgumentException) {
+                    Log.e("MainActivity", "intent has no data", e)
+                }
+
             }
         }
     }
