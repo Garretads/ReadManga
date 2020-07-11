@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:background="?attr/colorPrimary"
         android:fitsSystemWindows="true"
-        tools:context=".ui.mangaInfo.MangaInfoActivity">
+        tools:context=".ui.manga.MangaInfoActivity">
 
     <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"

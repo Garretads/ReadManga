@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.ui.mangaInfo
+package ru.garretech.readmanga.ui.manga
 
 import android.content.Intent
 import android.os.Bundle
@@ -17,9 +17,9 @@ import kotlinx.android.synthetic.main.activity_manga_info.*
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.ui.settings.SettingsActivity
 import ru.garretech.readmanga.adapters.MovieAboutPagerAdapter
-import ru.garretech.readmanga.database.AppDataSource
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.providers.SiteContentProvider
+import ru.garretech.readmanga.ui.manga.viewModel.MangaInfoActivityViewModel
 
 class MangaInfoActivity : AppCompatActivity() {
 
@@ -33,10 +33,10 @@ class MangaInfoActivity : AppCompatActivity() {
 
     internal lateinit var mFragmentAdapter: MovieAboutPagerAdapter
     lateinit var viewModel: MangaInfoActivityViewModel
-    var isRandom: Boolean = true
+//    var isRandom: Boolean = true
 
-    internal lateinit var currentManga: Manga
-    internal lateinit var dataSource: AppDataSource
+//    internal lateinit var currentManga: Manga
+//    internal lateinit var dataSource: AppDataSource
     internal var observable: Subject<Boolean> = PublishSubject.create()
     internal var disposable: Disposable? = null
     internal lateinit var optionsMenu: Menu
@@ -48,9 +48,9 @@ class MangaInfoActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this).get(MangaInfoActivityViewModel::class.java)
         showProgressCircle()
 
-        isRandom = intent.getBooleanExtra("is_random", true)
+        val isRandom = intent.getBooleanExtra("is_random", true)
 
-        var url: String = if (isRandom) {
+        val url: String = if (isRandom) {
             SiteContentProvider.RANDOM_MOVIE_PREFIX
         } else {
             intent.getStringExtra("manga_url")!!
@@ -83,7 +83,6 @@ class MangaInfoActivity : AppCompatActivity() {
             item.setIcon(R.drawable.ic_favorite_white_24dp)
         else
             item.setIcon(R.drawable.ic_favorite_border_white_24dp)
-
     }
 
     private fun showProgressCircle() {
@@ -113,7 +112,6 @@ class MangaInfoActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-
         menuInflater.inflate(R.menu.menu_manga_about, menu)
         optionsMenu = menu
 

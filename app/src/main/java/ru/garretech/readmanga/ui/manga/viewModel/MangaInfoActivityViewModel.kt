@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.ui.mangaInfo
+package ru.garretech.readmanga.ui.manga.viewModel
 
 import android.app.Application
 import android.util.Log
@@ -38,12 +38,11 @@ class MangaInfoActivityViewModel(application: Application) : AndroidViewModel(ap
                 }
             }).also { disposableBag.add(it) }
 
-    fun getMangaFromAPISingle(url: String) = SiteContentProvider.getMangaInfo(url)
+    private fun getMangaFromAPISingle(url: String) = SiteContentProvider.getMangaInfo(url)
         .map {
             currentManga = it
             it
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-
 
     private fun getMangaFromAPI(url: String, callback: (Manga) -> Unit) =
         getMangaFromAPISingle(url)

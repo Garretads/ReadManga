@@ -14,9 +14,9 @@
     <string name="action_clear">Очистить</string>
     <string name="action_history">История</string>
     <string name="search_hint">Поиск</string>
-    <string name="age_description">Год:</string>
-    <string name="genres_description">Жанры:</string>
-    <string name="production_country_description">Производство:</string>
+    <string name="age_description">Год: %s</string>
+    <string name="genres_description">Жанры: %s</string>
+    <string name="production_country_description">Производство: %s</string>
     <string name="editor_choice_title">Выбор редакции</string>
     <string name="list_manga_title">Полный список</string>
     <string name="random_manga_title">Случайная манга</string>

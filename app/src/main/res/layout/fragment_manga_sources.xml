@@ -5,7 +5,7 @@
         android:id="@+id/movie_sources_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.mangaInfo.MangaEpisodesFragment">
+        tools:context=".ui.manga.MangaEpisodesFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -57,6 +57,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="true"
+                android:focusable="true"
                 android:visibility="gone"
                 app:backgroundTint="#817674"
                 app:fabCustomSize="58dp"

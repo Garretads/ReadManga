@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.ui.mangaInfo
+package ru.garretech.readmanga.ui.manga
 
 import android.content.Context
 import android.content.Intent
@@ -28,6 +28,7 @@ import ru.garretech.readmanga.fragments.ProgressBottomSheet
 import ru.garretech.readmanga.interfaces.OnExpandableItemClickListener
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
+import ru.garretech.readmanga.ui.manga.viewModel.MangaEpisodesViewModel
 
 
 class MangaEpisodesFragment : Fragment(), OnExpandableItemClickListener {

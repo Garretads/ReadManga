@@ -38,7 +38,7 @@ import ru.garretech.readmanga.R
 import ru.garretech.readmanga.Settings
 import ru.garretech.readmanga.ui.about.AboutApplicationActivity
 import ru.garretech.readmanga.ui.genres.GenresActivity
-import ru.garretech.readmanga.ui.mangaInfo.MangaInfoActivity
+import ru.garretech.readmanga.ui.manga.MangaInfoActivity
 import ru.garretech.readmanga.ui.settings.SettingsActivity
 import ru.garretech.readmanga.adapters.RecyclerAdapter
 import ru.garretech.readmanga.fragments.ConfirmationFragment

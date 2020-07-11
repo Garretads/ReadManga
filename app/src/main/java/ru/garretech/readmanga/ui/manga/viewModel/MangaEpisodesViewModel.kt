@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.ui.mangaInfo
+package ru.garretech.readmanga.ui.manga.viewModel
 
 import android.app.Application
 import android.util.Log

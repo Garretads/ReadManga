@@ -8,7 +8,7 @@ import ru.garretech.readmanga.R
 import ru.garretech.readmanga.interfaces.OnExpandableItemClickListener
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Volume
-import ru.garretech.readmanga.ui.mangaInfo.MangaEpisodesViewModel
+import ru.garretech.readmanga.ui.manga.viewModel.MangaEpisodesViewModel
 
 
 class ExpandableItemAdapter(

@@ -1,4 +1,4 @@
-package ru.garretech.readmanga.ui.mangaInfo
+package ru.garretech.readmanga.ui.manga
 
 import android.os.Bundle
 import android.view.Gravity
@@ -10,7 +10,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.my.target.ads.MyTargetView
@@ -18,8 +17,9 @@ import com.yandex.mobile.ads.*
 import org.json.JSONException
 import ru.garretech.readmanga.R
 import ru.garretech.readmanga.Settings
-import ru.garretech.readmanga.databinding.FragmentMovieInfoBinding
+import ru.garretech.readmanga.databinding.FragmentMangaInfoBinding
 import ru.garretech.readmanga.models.Manga
+import ru.garretech.readmanga.ui.manga.viewModel.MangaAboutViewModel
 
 
 class MangaAboutFragment : androidx.fragment.app.Fragment() {
@@ -32,7 +32,7 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
 
     private var mAdRequest: AdRequest? = null
 
-    private lateinit var binding: FragmentMovieInfoBinding
+    private lateinit var binding: FragmentMangaInfoBinding
 
     private val mangaTitleTextView: TextView get() = binding.mangaTitleText
     private val mangaAgeView: TextView get() =  binding.mangaAgeText
@@ -54,13 +54,9 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
     }
 
     private val myTargetViewListener = object : MyTargetView.MyTargetViewListener {
-        override fun onLoad(p0: MyTargetView) {
-            val a = 5
-        }
+        override fun onLoad(p0: MyTargetView) {}
 
-        override fun onClick(p0: MyTargetView) {
-            val a = 5
-        }
+        override fun onClick(p0: MyTargetView) {}
 
         override fun onNoAd(p0: String, p1: MyTargetView) {
             mainContainer.removeView(myTargetAdView)
@@ -75,16 +71,18 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider.AndroidViewModelFactory(activity!!.application).create(MangaAboutViewModel::class.java)
-//        viewModel = ViewModelProviders.of(this).get(MangaAboutViewModel::class.java)
+        viewModel = ViewModelProvider(this)[MangaAboutViewModel::class.java]
         viewModel.currentManga = currentManga
+
+
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentMovieInfoBinding.inflate(inflater, container, false)
+        binding = FragmentMangaInfoBinding.inflate(inflater, container, false)
 
         showProgressBar()
         if (savedInstanceState != null) {
@@ -93,7 +91,7 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
                 startLoading()
             }
         } else {
-            if (viewModel.currentManga == null && currentManga != null)
+            if (viewModel.currentManga.value == null && currentManga != null)
                 viewModel.currentManga = currentManga
 
             startLoading()
@@ -105,31 +103,27 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
     private fun startLoading() {
         var genresString = StringBuilder()
 
-        for (genre in viewModel.currentManga?.genres ?: ArrayList())
+        for (genre in viewModel.currentManga.value?.genres ?: ArrayList())
             genresString.append("$genre, ")
 
         if (genresString.isNotEmpty())
             mangaGenresView.text =
-                getString(R.string.genres_description) + " " + genresString.substring(
-                    0,
-                    genresString.length - 2
-                )
+                getString(R.string.genres_description, genresString.substring(0, genresString.length - 2))
 
-
-        mangaTitleTextView.text = viewModel.currentManga?.title
+        mangaTitleTextView.text = viewModel.currentManga.value?.title
         mangaProductionCountryView.text =
-            getString(R.string.production_country_description) + " " + viewModel.currentManga?.productionCountry
-        mangaChaptersNumberView.text = viewModel.currentManga?.chaptersNumber
-        mangaDurationView.text = viewModel.currentManga?.duration
-        mangaAgeView.text =
-            getString(R.string.age_description) + " " + viewModel.currentManga?.productionYear
-        mangaDescriptionView.text = viewModel.currentManga?.description
+            getString(R.string.production_country_description, viewModel.currentManga.value?.productionCountry ?: "")
+        mangaChaptersNumberView.text = viewModel.currentManga.value?.chaptersNumber
+//        mangaDurationView.text = viewModel.currentManga?.duration
+//        mangaAgeView.text =
+//            getString(R.string.age_description, viewModel.currentManga?.productionYear ?: "")
+//        mangaDescriptionView.text = viewModel.currentManga?.description
 
 
-        if (viewModel.currentManga?.mangaImageURL != null && context != null)
+        if (viewModel.currentManga.value?.mangaImageURL != null && context != null)
             Glide
                 .with(context!!)
-                .load(viewModel.currentManga?.mangaImageURL!!)
+                .load(viewModel.currentManga.value?.mangaImageURL!!)
                 .fitCenter()
                 .transition(DrawableTransitionOptions.withCrossFade())
                 //.placeholder(R.drawable.loading_spinner)
@@ -143,7 +137,7 @@ class MangaAboutFragment : androidx.fragment.app.Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(URL_MANGA, viewModel.currentManga?.url)
+        outState.putString(URL_MANGA, viewModel.currentManga.value?.url)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

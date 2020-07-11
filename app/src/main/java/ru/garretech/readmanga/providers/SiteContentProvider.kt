@@ -291,11 +291,7 @@ class SiteContentProvider {
                     val title = element1.getElementsByTag("img")[0].attr("alt")
                     val imageURL: String
                     imageURL = element1.getElementsByTag("img")[0].attr("data-original")
-                    movie = Manga(
-                        title,
-                        imageURL,
-                        url
-                    )
+                    movie = Manga(title, imageURL, url)
 
                     movieList.add(movie)
                 }
