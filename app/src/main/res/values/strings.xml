@@ -113,5 +113,5 @@
         сайта readmanga.live.
     </string>
 
-    <string name="changelog">Изменения в 1.1.7: 1) Исправлен нерабочий поиск</string>
+    <string name="changelog">Изменения в 1.1.8: 1) Исправлен нерабочий поиск и каталог 2) Исправлена загрузка некоторых изображений на android 4.4</string>
 </resources>
