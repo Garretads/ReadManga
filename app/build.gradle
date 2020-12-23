@@ -35,8 +35,8 @@ android {
         applicationId "ru.garretech.readmanga"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 20
-        versionName "1.1.7"
+        versionCode 21
+        versionName "1.1.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         signingConfig signingConfigs.release
