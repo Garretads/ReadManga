@@ -6,10 +6,11 @@ import ru.garretech.readmanga.tools.ListConverter
 import java.io.Serializable
 
 @Entity
-class Manga
-    (
-    var title: String?, @field:ColumnInfo(name = "manga_image_url")
-var mangaImageURL: String, @field:PrimaryKey
+class Manga(
+    var title: String?,
+    @field:ColumnInfo(name = "manga_image_url")
+    var mangaImageURL: String,
+    @field:PrimaryKey
     var url: String
 ) : Serializable {
 

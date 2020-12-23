@@ -370,6 +370,11 @@ class SiteContentProvider {
 
             resultAmount = resultAmount.substring(0, resultAmount.lastIndexOf("]") + 1).replace("manga/","")
 
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
+                resultAmount = resultAmount.replace("https", "http")
+            }
+
+
             //val pageCount = pageContent.getElementsByClass("pages-count")?.first()?.text()
             //var imageUrl = pageContent.getElementById("fotocontext").getElementsByTag("img").attr("src")
             //imageUrl = imageUrl.substring(imageUrl.indexOf("?"))
@@ -651,7 +656,7 @@ class SiteContentProvider {
         ): HashMap<String, Any> {
             val mangaList = ArrayList<Manga>()
             val result = HashMap<String, Any>()
-            val elements = pageContent.getElementsByClass("tile col-sm-6 ")
+            val elements = pageContent.getElementsByClass("col-sm-6")
             //var imageDownloader: ImageDownloader
             var manga: Manga
             var iteration = 0

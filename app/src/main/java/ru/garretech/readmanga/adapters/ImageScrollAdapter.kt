@@ -18,10 +18,9 @@ class ImageScrollAdapter(private val mContext: Context, private val mImageList: 
     lateinit var onViewPagerClickListener: OnViewPagerClickListener
 
     init {
-
-        for (url in mImageList)
-            BigImageViewer.prefetch(Uri.parse(url))
-
+        mImageList.forEach {
+            BigImageViewer.prefetch(Uri.parse(it))
+        }
     }
 
     fun setCustomOnClickListener(listener: OnViewPagerClickListener) {
@@ -63,6 +62,9 @@ class ImageScrollAdapter(private val mContext: Context, private val mImageList: 
                     }
                 }
             } else {*/
+
+            val imageUrl = mImageList.get(position)
+
             imageView.showImage(Uri.parse(mImageList.get(position).toString()))
             container.addView(imageView)
 
