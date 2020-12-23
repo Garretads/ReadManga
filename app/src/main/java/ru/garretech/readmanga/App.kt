@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.multidex.MultiDex
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideImageLoader
+import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import io.reactivex.plugins.RxJavaPlugins
@@ -14,6 +15,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        FirebaseApp.initializeApp(applicationContext)
         BigImageViewer.initialize(GlideImageLoader.with(applicationContext))
 
 
