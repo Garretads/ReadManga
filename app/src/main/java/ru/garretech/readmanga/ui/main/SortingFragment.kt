@@ -97,6 +97,7 @@ class SortingFragment : DialogFragment() {
         namesJson = jsonObject.getJSONArray("translatedValues")
 
         tableRow = TableRow(context)
+
         for (i in 0 until namesJson.length()) {
             if (i % 2 == 0) {
                 filterRadioGroup.addView(tableRow)
@@ -107,6 +108,7 @@ class SortingFragment : DialogFragment() {
             radioButton.tag = i
             tableRow.addView(radioButton)
         }
+
         filterRadioGroup.addView(tableRow)
         if (selectedPosition != -1) filterRadioGroup.checkChildAt(selectedPosition)
 

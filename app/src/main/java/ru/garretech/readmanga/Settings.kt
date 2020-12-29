@@ -11,6 +11,8 @@ object Settings {
     val SITE_URL = "https://readmanga.live"
     val SITE_NAME = "readmanga.live"
 
+    val explicitContent = listOf("эротика", "гей-тема", "лесби-тема", "этти", "гарем", "юри")
+
     fun max_loaded_in_screen(): Int {
         return max_loaded_in_screen
     }

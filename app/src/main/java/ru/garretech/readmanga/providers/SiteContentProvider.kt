@@ -18,6 +18,7 @@ import org.jsoup.select.Elements
 import ru.garretech.readmanga.Settings
 import ru.garretech.readmanga.Settings.SITE_NAME
 import ru.garretech.readmanga.Settings.SITE_URL
+import ru.garretech.readmanga.Settings.explicitContent
 import ru.garretech.readmanga.models.Chapter
 import ru.garretech.readmanga.models.Manga
 import ru.garretech.readmanga.models.Volume
@@ -228,6 +229,7 @@ class SiteContentProvider {
     }
 
     companion object {
+
         private val editorChoice = "row tiles-row short"
         val NEW_MOVIES_PARAMS = arrayOf("sortType", "created")
         val LIST_PREFIX = "list"
@@ -306,6 +308,7 @@ class SiteContentProvider {
 
         val genresList =
             Single.create<JSONArray> {
+
                 val genresList = JSONArray()
                 val URL_PREFIX = "/list/genres/sort_name"
                 val pageDownloader =
@@ -326,6 +329,11 @@ class SiteContentProvider {
                         element1.getElementsByTag("td").first().getElementsByTag("a").first()
                     val jsonObject = JSONObject()
                     val genreName = tempElement.text()
+
+                    val explicitGenre = explicitContent.find { genreName.contains(it) }
+                    if (explicitGenre != null)
+                        continue
+
                     var genreLink = tempElement.attr("href")
                     genreLink = genreLink.substring(1)
                     jsonObject.put("name", genreName)
@@ -368,7 +376,8 @@ class SiteContentProvider {
             if (matcher.find())
                 resultAmount = matcher.group(1)
 
-            resultAmount = resultAmount.substring(0, resultAmount.lastIndexOf("]") + 1).replace("manga/","")
+            resultAmount =
+                resultAmount.substring(0, resultAmount.lastIndexOf("]") + 1).replace("manga/", "")
 
             if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
                 resultAmount = resultAmount.replace("https", "http")
@@ -670,6 +679,22 @@ class SiteContentProvider {
                     element.getElementsByClass("tile-info").first().getElementsByTag("a")
                 if (tempElements.size != 0) {
 
+                    val genres = if (tempElements.size > 1) {
+                        val stringBuilder = StringBuilder()
+                        for (element1 in tempElements) {
+                            stringBuilder.append(element1.text())
+                            stringBuilder.append(", ")
+                        }
+                        stringBuilder.toString()
+                            .substring(0, stringBuilder.toString().lastIndexOf(", "))
+                    } else {
+                        tempElements.first().text()
+                    }
+
+                    // Поиск запрещенных жанров
+                    val explicitGenre = explicitContent.find { genres.contains(it) }
+                    if (explicitGenre != null)
+                        continue
 
                     var tempElement = element.getElementsByClass("img").first()
                     val url = tempElement.getElementsByTag("a")[0].attr("href")
