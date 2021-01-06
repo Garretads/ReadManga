@@ -1,81 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="ru.garretech.readmanga">
+    package="ru.garretech.readmanganew">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <uses-feature
-            android:name="android.hardware.screen.portrait"
-            android:required="false"/> <!-- говорим что нам не обязателен touchscreen -->
+        android:name="android.hardware.screen.portrait"
+        android:required="false" /> <!-- говорим что нам не обязателен touchscreen -->
     <uses-feature
-            android:name="android.hardware.touchscreen"
-            android:required="false"/> <!-- говорим о том, что локация нам не обязательна -->
+        android:name="android.hardware.touchscreen"
+        android:required="false" /> <!-- говорим о том, что локация нам не обязательна -->
     <uses-feature
-            android:name="android.permission.ACCESS_FINE_LOCATION"
-            android:required="false"/> <!-- говорим о том, что функции телефона тоже не обязательны -->
+        android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:required="false" /> <!-- говорим о том, что функции телефона тоже не обязательны -->
     <uses-feature
-            android:name="android.hardware.telephony"
-            android:required="false"/> <!-- говорим о том, что микрофон нам не обязателен -->
+        android:name="android.hardware.telephony"
+        android:required="false" /> <!-- говорим о том, что микрофон нам не обязателен -->
     <uses-feature
-            android:name="android.permission.RECORD_AUDIO"
-            android:required="false"/>
+        android:name="android.permission.RECORD_AUDIO"
+        android:required="false" />
 
     <application
-            android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
-            android:supportsRtl="true"
-            android:name=".App"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:usesCleartextTraffic="true">
+        android:name="ru.garretech.readmanganew.App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.NoActionBar"
+        android:usesCleartextTraffic="true">
         <activity
-                android:name=".ui.reader.MangaReaderActivity"
-                android:configChanges="orientation|keyboardHidden|screenSize"
-                android:label="@string/title_activity_manga_reader"
-                android:theme="@style/FullscreenTheme">
-        </activity>
+            android:name="ru.garretech.readmanganew.ui.reader.MangaReaderActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_manga_reader"
+            android:theme="@style/FullscreenTheme" />
         <activity
-                android:name=".ui.settings.SettingsActivity"
-                android:label="@string/title_activity_settings"
-                android:parentActivityName=".ui.main.MainActivity">
+            android:name="ru.garretech.readmanganew.ui.settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="ru.garretech.readmanganew.ui.main.MainActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="ru.garretech.readmanga.ui.main.MainActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.garretech.readmanganew.ui.main.MainActivity" />
         </activity>
-        <activity android:name=".ui.about.AboutApplicationActivity"/>
+        <activity android:name="ru.garretech.readmanganew.ui.about.AboutApplicationActivity" />
         <activity
-                android:name=".ui.genres.GenresActivity"
-                android:label="@string/title_activity_genres"
-                android:parentActivityName=".ui.main.MainActivity">
+            android:name="ru.garretech.readmanganew.ui.genres.GenresActivity"
+            android:label="@string/title_activity_genres"
+            android:parentActivityName="ru.garretech.readmanganew.ui.main.MainActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="ru.garretech.readmanga.ui.main.MainActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.garretech.readmanganew.ui.main.MainActivity" />
         </activity>
         <activity
-                android:name=".ui.mangaInfo.MangaInfoActivity"
-                android:theme="@style/Theme.AppCompat.NoActionBar"
-                android:label="@string/title_activity_movie_about"
-                android:parentActivityName=".ui.main.MainActivity">
+            android:name="ru.garretech.readmanganew.ui.mangaInfo.MangaInfoActivity"
+            android:label="@string/title_activity_movie_about"
+            android:parentActivityName="ru.garretech.readmanganew.ui.main.MainActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="ru.garretech.readmanga.ui.main.MainActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.garretech.readmanganew.ui.main.MainActivity" />
         </activity>
-        <activity android:name=".ui.main.MainActivity">
+        <activity android:name="ru.garretech.readmanganew.ui.main.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <meta-data
-                    android:name="android.app.searchable"
-                    android:resource="@xml/searchable"/>
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
+
         <meta-data
-                android:name="io.fabric.ApiKey"
-                android:value="70d62ee846129deeec5919cdea7cbc0bdef98d40"/>
+            android:name="io.fabric.ApiKey"
+            android:value="70d62ee846129deeec5919cdea7cbc0bdef98d40" />
     </application>
 
 </manifest>

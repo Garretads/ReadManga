@@ -5,7 +5,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/rounded_shape_strong"
         android:padding="5dp"
-        tools:context=".ui.main.SortingFragment">
+        tools:context="ru.garretech.readmanganew.ui.main.SortingFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:text="Категории" />
 
-            <ru.garretech.readmanga.adapters.CustomTableLayout
+            <ru.garretech.readmanganew.adapters.CustomTableLayout
                     android:id="@+id/categoriesRadioGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:text="Возрастные рекомендации" />
 
-            <ru.garretech.readmanga.adapters.CustomTableLayout
+            <ru.garretech.readmanganew.adapters.CustomTableLayout
                     android:id="@+id/ageRadioGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -80,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:text="Сортировка" />
 
-            <ru.garretech.readmanga.adapters.CustomTableLayout
+            <ru.garretech.readmanganew.adapters.CustomTableLayout
                     android:id="@+id/sortingRadioGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:text="Фильтр" />
 
-            <ru.garretech.readmanga.adapters.CustomTableLayout
+            <ru.garretech.readmanganew.adapters.CustomTableLayout
                     android:id="@+id/filterRadioGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />

@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:background="?attr/colorPrimary"
         android:fillViewport="true"
-        tools:context=".ui.mangaInfo.MangaAboutFragment">
+        tools:context="ru.garretech.readmanganew.ui.mangaInfo.MangaAboutFragment">
 
     <include
             android:id="@+id/manga_info_progress_circle"

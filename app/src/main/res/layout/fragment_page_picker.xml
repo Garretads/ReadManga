@@ -5,7 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
-        tools:context=".ui.reader.PagePickerFragment">
+        tools:context="ru.garretech.readmanganew.ui.reader.PagePickerFragment">
 
     <com.shawnlin.numberpicker.NumberPicker
             android:id="@+id/pagePicker"

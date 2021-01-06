@@ -5,17 +5,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/black"
-        tools:context=".ui.reader.MangaReaderActivity">
+        tools:context="ru.garretech.readmanganew.ui.reader.MangaReaderActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
-    <ru.garretech.readmanga.adapters.MangaViewPager
+    <ru.garretech.readmanganew.adapters.MangaViewPager
             android:id="@+id/mangaContentView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/anime"></ru.garretech.readmanga.adapters.MangaViewPager>
+            app:srcCompat="@drawable/anime"></ru.garretech.readmanganew.adapters.MangaViewPager>
 
     <!-- <androidx.viewpager2.widget.ViewPager2
              android:id="@+id/mangaContentView"
