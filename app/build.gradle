@@ -32,7 +32,7 @@ android {
             useSupportLibrary = true
         }
         
-        applicationId "ru.garretech.readmanga"
+        applicationId "ru.garretech.readmanganew"
         minSdkVersion 19
         targetSdkVersion 30
         versionCode 22
